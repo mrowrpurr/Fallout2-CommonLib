@@ -34,11 +34,11 @@ describe("Formatted Debug Helper") begin
 
     test("debug_array() outputs stringified representation of array") begin
         variable seq_array = [69, "Four Twenty"];
-        debug_array(seq_array);
+        debug_formatted_array(seq_array);
         expect_debug_to_receive("List(2): [69, Four Twenty]");
 
         variable map = { "num": 69, "text": "Four Twenty" };
-        debug_array(map);
+        debug_formatted_array(map);
         expect_debug_to_receive("Map(2): {num: 69, text: Four Twenty}");
     end
 

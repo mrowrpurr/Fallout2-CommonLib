@@ -1,9 +1,7 @@
 #pragma once
 
 #define debug(text) __formatted_debug_output(DEBUG_PREFIX + text)
-#define debug_array(arr) debug(debug_array_str(arr))
-
-// Update to NOT use sprintf_array because you cannot use sprintf_array inside of sprintf_array
+#define debug_formatted_array(arr) debug(debug_array_str(arr))
 
 #define debug1(text, arg1) \
     debug(text + " (" + arg1 + ")")
