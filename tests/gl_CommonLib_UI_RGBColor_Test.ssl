@@ -1,0 +1,100 @@
+#include "Waterchip.h"
+#include "Common/UI/RGBColor.h"
+
+#define hex(hex_string) HexToDecimal(hex_string)
+
+describe("RGBColor") begin
+
+    variable normalized;
+
+    it("can get full-length 6-character HTML color hex string given triplets") begin
+        // For 6, return what we're provided
+        expect(rgb_hex_string("abcdef")) to_equal("abcdef");
+        expect(rgb_hex_string("123abc")) to_equal("123abc");
+
+        // Expand triplets like browsers in CSS
+        expect(rgb_hex_string("abc")) to_equal("aabbcc");
+        expect(rgb_hex_string("1ac")) to_equal("11aacc");
+
+        // And "supported" lengths that aren't triplets...
+
+        // This isn't really supported by browsers, but I'm adding it anyway.
+        expect(rgb_hex_string("bc")) to_equal("bcbcbc");
+        expect(rgb_hex_string("ef")) to_equal("efefef");
+
+        // Same deal, totally not supported by browsers, but I'm supporting it.
+        expect(rgb_hex_string("a")) to_equal("aaaaaa");
+        expect(rgb_hex_string("3")) to_equal("333333");
+
+        // And unsupported lengths ...
+        expect(rgb_hex_string("1234"))      to_be_zero;
+        expect(rgb_hex_string("12345"))     to_be_zero;
+        expect(rgb_hex_string("1234567"))   to_be_zero;
+        expect(rgb_hex_string("12345678"))  to_be_zero;
+        expect(rgb_hex_string("123456789")) to_be_zero;
+
+        // And type checks ...
+        expect(rgb_hex_string(69))     to_be_zero;
+        expect(rgb_hex_string(420.69)) to_be_zero;
+    end
+
+    it("ignores # prefix character if provided") begin
+        // Same examples as the test above, but with # prefix
+        expect(rgb_hex_string("#abcdef")) to_equal("abcdef");
+        expect(rgb_hex_string("#123abc")) to_equal("123abc");
+        expect(rgb_hex_string("#abc")) to_equal("aabbcc");
+        expect(rgb_hex_string("#1ac")) to_equal("11aacc");
+        expect(rgb_hex_string("#bc")) to_equal("bcbcbc");
+        expect(rgb_hex_string("#ef")) to_equal("efefef");
+        expect(rgb_hex_string("#a")) to_equal("aaaaaa");
+        expect(rgb_hex_string("#3")) to_equal("333333");
+        expect(rgb_hex_string("#1234"))      to_be_zero;
+        expect(rgb_hex_string("#12345"))     to_be_zero;
+        expect(rgb_hex_string("#1234567"))   to_be_zero;
+        expect(rgb_hex_string("#12345678"))  to_be_zero;
+        expect(rgb_hex_string("#123456789")) to_be_zero;
+    end
+
+    it("can get RGB int values of RGB from hex color") begin
+        expect(rgb_red_int_from_hex("abcdef"))   to_equal(hex("ab"));
+        expect(rgb_green_int_from_hex("abcdef")) to_equal(hex("cd"));
+        expect(rgb_blue_int_from_hex("abcdef"))  to_equal(hex("ef"));
+
+        // Hexadecimal casing doesn't matter, same hex value
+        expect(rgb_red_int_from_hex("DE12f4"))   to_equal(hex("de"));
+        expect(rgb_green_int_from_hex("DE12f4")) to_equal(hex("12"));
+        expect(rgb_blue_int_from_hex("DE12f4"))  to_equal(hex("F4"));
+    end
+
+    it("can get RGB float values of RGB from hex color") begin
+        expect(rgb_red_from_hex("00ffff"))   to_equal(0.0);
+        expect(rgb_green_from_hex("ff00ff")) to_equal(0.0);
+        expect(rgb_blue_from_hex("ffff00"))  to_equal(0.0);
+
+        expect(rgb_red_from_hex("ff0000"))   to_equal(1.0);
+        expect(rgb_green_from_hex("00ff00")) to_equal(1.0);
+        expect(rgb_blue_from_hex("0000ff"))  to_equal(1.0);
+
+        expect(rgb_red_from_hex("abcdef"))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_green_from_hex("abcdef")) to_equal(205.0 / 255); // cd=205
+        expect(rgb_blue_from_hex("abcdef"))  to_equal(239.0 / 255); // ef=239
+    end
+
+    it("can normalize RGB hex into a single float and extract RGB pieces") begin
+        normalized = rgb_normalize_hex("abcdef");
+        expect(rgb_extract_red(normalized))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_extract_green(normalized)) to_equal(205.0 / 255); // cd=205
+        expect(rgb_extract_blue(normalized))  to_equal(239.0 / 255); // ef=239
+    end
+
+    it("can normalize RGB floats into a single float and extract RGB pieces") begin
+        normalized = rgb_normalize_floats(
+            rgb_red_from_hex("abcdef"),
+            rgb_green_from_hex("abcdef"),
+            rgb_blue_from_hex("abcdef")
+        );
+        expect(rgb_extract_red(normalized))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_extract_green(normalized)) to_equal(205.0 / 255); // cd=205
+        expect(rgb_extract_blue(normalized))  to_equal(239.0 / 255); // ef=239
+    end
+end
