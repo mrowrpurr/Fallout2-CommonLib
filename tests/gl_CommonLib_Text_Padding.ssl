@@ -1,0 +1,20 @@
+#include "Waterchip.h"
+#include "Common/Text/Padding.h"
+
+describe("String Left/Right Padding") begin
+    it("can add left padding of a given character to a string") begin
+        expect(string_left_pad("HI", 5, "x")) to_equal("xxxHI");
+        expect(string_left_pad("hi", 4, "Z")) to_equal("ZZhi");
+        expect(string_left_pad("hi", 3, "Z")) to_equal("Zhi");
+        expect(string_left_pad("hi", 2, "Z")) to_equal("hi");
+        expect(string_left_pad("hi", 1, "Z")) to_equal("hi");
+    end
+
+    it("can add right padding of a given character to a string") begin
+        expect(string_right_pad("HI", 5, "x")) to_equal("HIxxx");
+        expect(string_right_pad("hi", 4, "Z")) to_equal("hiZZ");
+        expect(string_right_pad("hi", 3, "Z")) to_equal("hiZ");
+        expect(string_right_pad("hi", 2, "Z")) to_equal("hi");
+        expect(string_right_pad("hi", 1, "Z")) to_equal("hi");
+    end
+end
