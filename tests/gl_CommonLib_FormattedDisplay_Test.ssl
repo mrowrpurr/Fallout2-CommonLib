@@ -1,0 +1,87 @@
+#include "Waterchip.h"
+#include "Logger.h"
+#include "LoggerTestHelper.h"
+
+#include "sfall/lib.arrays.h"
+#include "sfall/lib.strings.h"
+
+// Mock display() output and send it to Logger (which has test logs enabled)
+#define __formatted_display_output(output) log_info(output)
+
+// DISPLAY_PREFIX is required for FormattedDisplay (although it can be empty)
+#define DISPLAY_PREFIX "[The Prefix] "
+
+// Include the core FormattedDisplay header
+#include "Common/Private/FormattedDisplayCore.h"
+
+// Assert the display output (including the DISPLAY_PREFIX at the start)
+#define expect_display_to_receive(text) \
+    expect(most_recent_test_log_message) to_equal(DISPLAY_PREFIX + text)
+
+describe("Formatted Display Helper") begin
+
+    setup_once begin
+        enable_test_logging;
+        hide_log_level_in_logs;
+        clear_test_log_messages;
+        expect(test_log_count) to_be_zero;
+    end
+
+    test("display() is a shortcut for display_msg()") begin
+        display("Hello");
+        expect_display_to_receive("Hello");
+    end
+
+    test("display_array() outputs stringified representation of array") begin
+        variable seq_array = [69, "Four Twenty"];
+        display_formatted_array(seq_array);
+        expect_display_to_receive("List(2): [69, Four Twenty]");
+
+        variable map = { "num": 69, "text": "Four Twenty" };
+        display_formatted_array(map);
+        expect_display_to_receive("Map(2): {num: 69, text: Four Twenty}");
+    end
+
+    test("display1, display2, display3, display4, display5, display6") begin
+        display1("Hello", 69);
+        expect_display_to_receive("Hello (69)");
+
+        display2("Hello", 69, 420);
+        expect_display_to_receive("Hello (69) (420)");
+
+        display3("Wassup?", 42, 69, "some string");
+        expect_display_to_receive("Wassup? (42) (69) (some string)");
+
+        display4("Wassup?", 123, 42, 69, 420);
+        expect_display_to_receive("Wassup? (123) (42) (69) (420)");
+
+        display5("Sup?", 999, 123, 420.69, 69, 420);
+        expect_display_to_receive("Sup? (999) (123) (420.69000) (69) (420)");
+
+        display6("Sup?", 999, 123, 42, 69, 420, 22);
+        expect_display_to_receive("Sup? (999) (123) (42) (69) (420) (22)");
+    end
+
+    test("display1f, display2f, display3f, display4f, display5f, display6f") begin
+        display1f("Hi %s There", 69);
+        expect_display_to_receive("Hi 69 There");
+
+        display2f("Hi %s There %s", 69, 420);
+        expect_display_to_receive("Hi 69 There 420");
+
+        display3f("%s Sup? %s %s", 42, 69, "a string");
+        expect_display_to_receive("42 Sup? 69 a string");
+
+        // I consistently get 420.690002
+        // If this test can be flaky, change it to check that the text
+        // *starts with* "123 is 420.690" and *ends *with* "and 69 is 420"
+        display4f("%s is %f and %s is %s", 123, 420.69, 69, 420);
+        expect_display_to_receive("123 is 420.690002 and 69 is 420");
+
+        display5f("Lots %s and %s & %s & %s and also %s", 999, 123, 42, 69, 420);
+        expect_display_to_receive("Lots 999 and 123 & 42 & 69 and also 420");
+
+        display6f("%s So Many %s and %s & %s & %s and also %s", 999, 123, 42, 69, 420, 22);
+        expect_display_to_receive("999 So Many 123 and 42 & 69 & 420 and also 22");
+    end
+end
