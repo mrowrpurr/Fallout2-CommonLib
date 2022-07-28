@@ -1,0 +1,475 @@
+#include "Waterchip.h"
+
+#include "Common/Logger.h"
+
+// Provides helper functions for reading test logs
+// enabled via enable_test_logging;
+#include "Common/Test/LoggerTestHelper.h"
+
+describe("Logger") begin
+    
+    setup begin
+        logger_reset;
+        enable_test_logging;
+        enable_logging_all;
+    end
+
+    // Tests a number of the basics to make sure things are working!
+    test("can log something (to an array for tests)") begin
+        expect(LOGGER_TEST_LOGS)  to_be_zero;
+        expect(test_log_count)    to_be_zero;
+        expect(test_log_messages) to_be_empty;
+
+        initialize_test_logs;
+
+        expect(LOGGER_TEST_LOGS)            not_to_be_zero;
+        expect(len_array(LOGGER_TEST_LOGS)) to_be_zero;
+        expect(test_log_count)              to_be_zero;
+        expect(test_log_messages)           to_be_empty;
+
+        log_debug("This is a message");
+
+        expect(LOGGER_TEST_LOGS)               not_to_be_zero;
+        expect(len_array(LOGGER_TEST_LOGS))    to_equal(1);
+        expect(LOGGER_TEST_LOGS[0])            to_equal("[DEBUG] This is a message");
+        expect(test_log_count)                 to_equal(1);
+        expect(len_array(test_log_messages))   to_equal(1);
+        expect(test_log_messages[0])           to_equal("[DEBUG] This is a message");
+        expect(most_recent_test_log_message)   to_equal("[DEBUG] This is a message");
+        expect(test_log_message_at(0))         to_equal("[DEBUG] This is a message");
+
+        log_warn("Another message");
+
+        expect(len_array(LOGGER_TEST_LOGS))    to_equal(2);
+        expect(LOGGER_TEST_LOGS[0])            to_equal("[DEBUG] This is a message");
+        expect(LOGGER_TEST_LOGS[1])            to_equal("[WARN] Another message");
+        expect(test_log_count)                 to_equal(2);
+        expect(len_array(test_log_messages))   to_equal(2);
+        expect(test_log_messages[0])           to_equal("[DEBUG] This is a message");
+        expect(test_log_messages[1])           to_equal("[WARN] Another message");
+        expect(most_recent_test_log_message)   to_equal("[WARN] Another message");
+        expect(test_log_message_at(0))         to_equal("[DEBUG] This is a message");
+        expect(test_log_message_at(1))         to_equal("[WARN] Another message");
+
+        clear_test_log_messages;
+
+        expect(len_array(LOGGER_TEST_LOGS))  to_be_zero;
+        expect(test_log_count)               to_be_zero;
+        expect(test_log_messages)            to_be_empty;
+    end
+
+    test("can call log_output() with a defined constant log level") begin
+        log_output(LOGGER_LEVEL_TRACE, "- trace -");
+        log_output(LOGGER_LEVEL_DEBUG, "- debug -");
+        log_output(LOGGER_LEVEL_INFO,  "- info -");
+        log_output(LOGGER_LEVEL_WARN,  "- warn -");
+        log_output(LOGGER_LEVEL_ERROR, "- error -");
+        log_output(LOGGER_LEVEL_FATAL, "- fatal -");
+
+        expect(test_log_message_at(0)) to_equal("[TRACE] - trace -");
+        expect(test_log_message_at(1)) to_equal("[DEBUG] - debug -");
+        expect(test_log_message_at(2)) to_equal("[INFO] - info -");
+        expect(test_log_message_at(3)) to_equal("[WARN] - warn -");
+        expect(test_log_message_at(4)) to_equal("[ERROR] - error -");
+        expect(test_log_message_at(5)) to_equal("[FATAL] - fatal -");
+    end
+
+    test("can call log_output() with a string log level") begin
+        log_output(LOGGER_LEVEL_TRACE_NAME, "- trace -");
+        log_output(LOGGER_LEVEL_DEBUG_NAME, "- debug -");
+        log_output(LOGGER_LEVEL_INFO_NAME,  "- info -");
+        log_output(LOGGER_LEVEL_WARN_NAME,  "- warn -");
+        log_output(LOGGER_LEVEL_ERROR_NAME, "- error -");
+        log_output(LOGGER_LEVEL_FATAL_NAME, "- fatal -");
+
+        expect(test_log_message_at(0)) to_equal("[TRACE] - trace -");
+        expect(test_log_message_at(1)) to_equal("[DEBUG] - debug -");
+        expect(test_log_message_at(2)) to_equal("[INFO] - info -");
+        expect(test_log_message_at(3)) to_equal("[WARN] - warn -");
+        expect(test_log_message_at(4)) to_equal("[ERROR] - error -");
+        expect(test_log_message_at(5)) to_equal("[FATAL] - fatal -");
+    end
+
+    test("can call set_log_level() with a constant int log level") begin
+        expect(LOGGER_LOG_LEVEL) not_to_equal(LOGGER_LEVEL_TRACE);
+        set_log_level(LOGGER_LEVEL_TRACE);
+        expect(LOGGER_LOG_LEVEL) to_equal(LOGGER_LEVEL_TRACE);
+
+        expect(LOGGER_LOG_LEVEL) not_to_equal(LOGGER_LEVEL_ERROR);
+        set_log_level(LOGGER_LEVEL_ERROR);
+        expect(LOGGER_LOG_LEVEL) to_equal(LOGGER_LEVEL_ERROR);
+    end
+
+    test("can call set_log_level() with a string log level") begin
+        expect(LOGGER_LOG_LEVEL) not_to_equal(LOGGER_LEVEL_TRACE);
+        set_log_level(LOGGER_LEVEL_TRACE_NAME);
+        expect(LOGGER_LOG_LEVEL) to_equal(LOGGER_LEVEL_TRACE);
+
+        expect(LOGGER_LOG_LEVEL) not_to_equal(LOGGER_LEVEL_ERROR);
+        set_log_level(LOGGER_LEVEL_ERROR_NAME);
+        expect(LOGGER_LOG_LEVEL) to_equal(LOGGER_LEVEL_ERROR);
+    end
+
+    test("configuring ALL shows all levels") begin
+        set_log_level(LOGGER_LEVEL_ALL);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!");
+        log_debug("DEBUG!");
+        log_info("INFO!");
+        log_warn("WARN!");
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(6);
+        expect(test_log_message_at(0)) to_equal("TRACE!");
+        expect(test_log_message_at(1)) to_equal("DEBUG!");
+        expect(test_log_message_at(2)) to_equal("INFO!");
+        expect(test_log_message_at(3)) to_equal("WARN!");
+        expect(test_log_message_at(4)) to_equal("ERROR!");
+        expect(test_log_message_at(5)) to_equal("FATAL!");
+    end
+
+    test("configuring TRACE shows all levels") begin
+        set_log_level(LOGGER_LEVEL_TRACE);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!");
+        log_debug("DEBUG!");
+        log_info("INFO!");
+        log_warn("WARN!");
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(6);
+        expect(test_log_message_at(0)) to_equal("TRACE!");
+        expect(test_log_message_at(1)) to_equal("DEBUG!");
+        expect(test_log_message_at(2)) to_equal("INFO!");
+        expect(test_log_message_at(3)) to_equal("WARN!");
+        expect(test_log_message_at(4)) to_equal("ERROR!");
+        expect(test_log_message_at(5)) to_equal("FATAL!");
+    end
+
+    test("configuring DEBUG shows expected logs") begin
+        set_log_level(LOGGER_LEVEL_DEBUG);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!");
+        log_info("INFO!");
+        log_warn("WARN!");
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(5);
+        expect(test_log_message_at(0)) to_equal("DEBUG!");
+        expect(test_log_message_at(1)) to_equal("INFO!");
+        expect(test_log_message_at(2)) to_equal("WARN!");
+        expect(test_log_message_at(3)) to_equal("ERROR!");
+        expect(test_log_message_at(4)) to_equal("FATAL!");
+    end
+
+    test("configuring INFO shows expected logs") begin
+        set_log_level(LOGGER_LEVEL_INFO);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!"); // will not be shown!
+        log_info("INFO!");
+        log_warn("WARN!");
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(4);
+        expect(test_log_message_at(0)) to_equal("INFO!");
+        expect(test_log_message_at(1)) to_equal("WARN!");
+        expect(test_log_message_at(2)) to_equal("ERROR!");
+        expect(test_log_message_at(3)) to_equal("FATAL!");
+    end
+
+    test("configuring WARN shows expected logs") begin
+        set_log_level(LOGGER_LEVEL_WARN);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!"); // will not be shown!
+        log_info("INFO!");   // will not be shown!
+        log_warn("WARN!");
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(3);
+        expect(test_log_message_at(0)) to_equal("WARN!");
+        expect(test_log_message_at(1)) to_equal("ERROR!");
+        expect(test_log_message_at(2)) to_equal("FATAL!");
+    end
+
+    test("configuring ERROR shows expected logs") begin
+        set_log_level(LOGGER_LEVEL_ERROR);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!"); // will not be shown!
+        log_info("INFO!");   // will not be shown!
+        log_warn("WARN!");   // will not be shown!
+        log_error("ERROR!");
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(2);
+        expect(test_log_message_at(0)) to_equal("ERROR!");
+        expect(test_log_message_at(1)) to_equal("FATAL!");
+    end
+
+    test("configuring FATAL shows expected logs") begin
+        set_log_level(LOGGER_LEVEL_FATAL);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!"); // will not be shown!
+        log_info("INFO!");   // will not be shown!
+        log_warn("WARN!");   // will not be shown!
+        log_error("ERROR!"); // will not be shown!
+        log_fatal("FATAL!");
+
+        expect(test_log_messages)      not_to_be_empty;
+        expect(test_log_count)         to_equal(1);
+        expect(test_log_message_at(0)) to_equal("FATAL!");
+    end
+
+    test("configuring NONE shows no logs") begin
+        set_log_level(LOGGER_LEVEL_NONE);
+        hide_log_level_in_logs;
+        expect(test_log_messages) to_be_empty;
+
+        log_trace("TRACE!"); // will not be shown!
+        log_debug("DEBUG!"); // will not be shown!
+        log_info("INFO!");   // will not be shown!
+        log_warn("WARN!");   // will not be shown!
+        log_error("ERROR!"); // will not be shown!
+        log_fatal("FATAL!"); // will not be shown!
+
+        expect(test_log_messages) to_be_empty;
+    end
+
+    test("can change the output format of the log level prefix") begin
+        log_debug("Hi");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hi");
+
+        set_log_level_output_format("%s: ");
+
+        log_debug("Hi again");
+        expect(most_recent_test_log_message) to_equal("DEBUG: Hi again");
+    end
+
+    test("can switch the log level prefix to be a suffix") begin
+        show_log_level_output_as_suffix;
+
+        log_debug("Hi");
+        
+        // Doesn't look really great by default!
+        expect(most_recent_test_log_message) to_equal("Hi[DEBUG] ");
+    end
+
+    test("can switch the log level prefix to be a suffix (and change its format)") begin
+        show_log_level_output_as_suffix;
+        set_log_level_output_format(" |%s|");
+
+        log_debug("Hi");
+
+        expect(most_recent_test_log_message) to_equal("Hi |DEBUG|");
+    end
+
+    test("by default all log messages are prefixed with log level") begin
+        log_debug("Hi");
+        
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hi");
+    end
+
+    test("can disable all log messages to be prefixed with log level") begin
+        hide_log_level_in_logs;
+
+        log_debug("Hi");
+        
+        expect(most_recent_test_log_message) to_equal("Hi");
+    end
+
+    test("can configure log level to be added to all logged lines") begin
+        log_debug("Hello\nWorld\nHow\nAre\nYou?");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello\nWorld\nHow\nAre\nYou?");
+
+        show_log_level_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello\n[DEBUG] World\n[DEBUG] ");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello\n[DEBUG] World");
+
+        // And formatted
+        set_log_level_output_format("|%s|:");
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("|DEBUG|:Hello\n|DEBUG|:World\n|DEBUG|:");
+
+        // And try it as a suffix too
+        show_log_level_output_as_suffix;
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Hello|DEBUG|:\nWorld|DEBUG|:\n|DEBUG|:");
+    end
+
+    test("can configure a prefix for all log messages") begin
+        set_logger_prefix("Wassup? ");
+
+        log_debug("HI THERE");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] HI THERE");
+
+        hide_log_level_in_logs;
+
+        log_debug("Another message");
+        expect(most_recent_test_log_message) to_equal("Wassup? Another message");
+    end
+
+    test("can configure a suffix for all log messages") begin
+        set_logger_suffix(" Sweet.");
+
+        log_debug("HI THERE");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] HI THERE Sweet.");
+
+        hide_log_level_in_logs;
+
+        log_debug("Another message");
+        expect(most_recent_test_log_message) to_equal("Another message Sweet.");
+    end
+
+    test("can configure prefix and suffix for all log messages") begin
+        set_logger_prefix("Wassup? ");
+        set_logger_suffix(" Sweet.");
+
+        log_debug("HI THERE");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] HI THERE Sweet.");
+
+        hide_log_level_in_logs;
+
+        log_debug("Another message");
+        expect(most_recent_test_log_message) to_equal("Wassup? Another message Sweet.");
+    end
+
+    test("can configure prefix to be added to all logged lines") begin
+        set_logger_prefix("Wassup? ");
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWorld\n");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWorld");
+
+        show_log_prefix_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWassup? World\nWassup? ");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWassup? World");
+
+        // And with log level on each line ...
+        show_log_level_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWassup? [DEBUG] World\nWassup? [DEBUG] ");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWassup? [DEBUG] World");
+    end
+
+    test("can configure suffix to be added to all logged lines") begin
+        set_logger_suffix(" Cool.");
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello\nWorld\n Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello\nWorld Cool.");
+
+        show_log_suffix_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello Cool.\nWorld Cool.\n Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello Cool.\nWorld Cool.");
+
+        // And with log level on each line ...
+        show_log_level_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello Cool.\n[DEBUG] World Cool.\n[DEBUG]  Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("[DEBUG] Hello Cool.\n[DEBUG] World Cool.");
+    end
+
+    test("can configure prefix and suffix to be added to all logged lines") begin
+        set_logger_prefix("Wassup? ");
+        set_logger_suffix(" Cool.");
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWorld\n Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello\nWorld Cool.");
+
+        show_log_prefix_on_every_line;
+        show_log_suffix_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello Cool.\nWassup? World Cool.\nWassup?  Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello Cool.\nWassup? World Cool.");
+
+        // And with log level on each line ...
+        show_log_level_on_every_line;
+
+        // With trailing \n
+        log_debug("Hello\nWorld\n");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello Cool.\nWassup? [DEBUG] World Cool.\nWassup? [DEBUG]  Cool.");
+
+        // Without trailing \n
+        log_debug("Hello\nWorld");
+        expect(most_recent_test_log_message) to_equal("Wassup? [DEBUG] Hello Cool.\nWassup? [DEBUG] World Cool.");
+    end
+
+    // Maybe? Would require a gl_ script to export a variable
+    // and client scripts would have an error if the gl_ isn't present.
+    todo("can configure log level globally across scripts");
+end
