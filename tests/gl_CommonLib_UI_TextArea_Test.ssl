@@ -1,5 +1,4 @@
 #include "Waterchip.h"
-#include "Common/Logger.h"
 #include "Common/UI/TextArea.h"
 
 variable _text_areas;
@@ -20,10 +19,6 @@ describe("TextArea") begin
 
     variable text_area,
              text_area2;
-
-    setup_once begin
-        disable_logging;
-    end
 
     teardown begin
         if _text_areas then begin
@@ -52,7 +47,23 @@ describe("TextArea") begin
         expect(text_area.name) not_to_equal(text_area2.name);
     end
 
-    todo("can add lines of text (of default color)");
+    test("can add lines of text (of default color)") begin
+        text_area = create_textarea;
+        expect(TextArea_LineCount(text_area))        to_be_zero;
+        expect(TextArea_VisibleLineCount(text_area)) to_be_zero;
+
+        TextArea_AddLine(text_area, "Hello, world!");
+
+        expect(TextArea_VisibleLineCount(text_area)) to_be_zero; // Not updated unless you Refresh
+        expect(TextArea_LineCount(text_area))        not_to_be_zero;
+        expect(TextArea_LineCount(text_area))        to_equal(1);
+
+        TextArea_AddLine(text_area, "Goodnight, moon!");
+
+        expect(TextArea_VisibleLineCount(text_area)) to_be_zero; // Not updated unless you Refresh
+        expect(TextArea_LineCount(text_area))        to_equal(2);
+    end
+
     todo("can add lines of text of certain color");
     todo("can get line count");
     todo("can clear all lines");

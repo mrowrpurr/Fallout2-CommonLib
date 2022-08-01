@@ -13,6 +13,23 @@
 
 #define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX "CommonLibUiTextArea_"
 
+#define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
+
+#define TextArea_LineCount(textarea) \
+    (len_array(textarea.all_lines) if textarea else 0)
+
+#define TextArea_VisibleLineCount(textarea) \
+    (len_array(textarea.visible_lines) if textarea else 0)
+
+// Adds a line of defaukt line color
+// Does *NOT* automatically update visible lines or render
+#define TextArea_AddLine(textarea, text) \
+    begin \
+        call array_push(textarea.all_lines, text); \
+        call array_push(textarea.line_colors, __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR); \
+    end \
+    false
+
 procedure TextArea_Create(variable defaults = 0) begin
     variable text_area = defaults if defaults else {};
     fix_array(text_area);
