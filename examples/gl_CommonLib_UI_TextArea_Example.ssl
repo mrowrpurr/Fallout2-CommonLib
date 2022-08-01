@@ -1,0 +1,35 @@
+#include "sfall/sfall.h"
+#include "sfall/dik.h"
+#include "Common/Logger.h"
+#include "Common/UI/TextArea.h"
+
+variable text_area;
+
+inline procedure setup_logger begin
+    set_logger_prefix("[TextArea Example] ");
+end
+
+inline procedure setup_text_area begin
+    text_area = TextArea_Create({
+        "x": 50,
+        "y": 100,
+        "width": 300,
+        "height": 200
+    });
+end
+
+procedure on_keypress begin
+    variable pressed = get_sfall_arg,
+             keycode = get_sfall_arg;
+
+    if pressed and keycode == DIK_DELETE then begin
+        log_info("Toggle visibility!");
+        call TextArea_ToggleVisibility(text_area);
+    end
+end
+
+procedure start begin
+    call setup_logger;
+    call setup_text_area;
+    register_hook_proc(HOOK_KEYPRESS, on_keypress);
+end
