@@ -1,0 +1,67 @@
+#include "Waterchip.h"
+#include "Common/Logger.h"
+#include "Common/UI/TextArea.h"
+
+variable _text_areas;
+
+// Helper to create text area.
+// Also sets it aside to be destroyed after the test runs.
+procedure create_textarea(variable options = 0) begin
+    if not _text_areas then begin
+        _text_areas = [];
+        fix_array(_text_areas);
+    end
+    variable text_area = TextArea_Create(options);
+    call array_push(_text_areas, text_area);
+    return text_area;
+end
+
+describe("TextArea") begin
+
+    variable text_area,
+             text_area2;
+
+    setup_once begin
+        disable_logging;
+    end
+
+    teardown begin
+        if _text_areas then begin
+            foreach text_area in _text_areas begin
+                call TextArea_Destroy(text_area);
+            end
+            free_array(_text_areas);
+            _text_areas = 0;
+        end
+    end
+
+    it("can provide custom name for text area (its window name)") begin
+        text_area = create_textarea({ "name": "MyWindowName" });
+        expect(text_area.name) to_equal("MyWindowName");
+    end
+
+    it("generates a random, unique window name by default") begin
+        text_area = create_textarea;
+        expect(text_area.name) not_to_be_empty;
+        expect(text_area.name) to_start_with("CommonLibUiTextArea_");
+
+        text_area2 = create_textarea;
+        expect(text_area2.name) not_to_be_empty;
+        expect(text_area2.name) to_start_with("CommonLibUiTextArea_");
+
+        expect(text_area.name) not_to_equal(text_area2.name);
+    end
+
+    todo("can add lines of text (of default color)");
+    todo("can add lines of text of certain color");
+    todo("can get line count");
+    todo("can clear all lines");
+    todo("can remove most recent line");
+    todo("can remove line at index");
+    todo("modifying lines automatically modifies visible lines");
+    todo("can enable text wrapping of visible lines (default: on)");
+    todo("can scroll visible text up a given number of lines");
+    todo("can scroll visible text down a given number of lines");
+    todo("can scroll visible text up to the top");
+    todo("can scroll visible text down to the bottom");
+end
