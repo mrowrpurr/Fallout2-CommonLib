@@ -34,3 +34,33 @@ procedure HexToDecimal(variable hex_string) begin
 
     return decimal;
 end
+
+procedure DecimalToHex(variable decimal) begin
+    if not decimal then return "0";
+
+    switch typeof(decimal) begin
+        case 2: decimal = round(decimal); // Round float to nearest integer
+        case 3: return decimal;           // Already a string
+    end
+
+    variable negative = (decimal < 0);
+    variable hex_values = temp_array(100, 0);
+    variable i;
+
+    if negative then decimal *= -1;
+
+    while decimal != 0 do begin
+        variable temp = decimal % 16;
+        if temp < 10 then temp += 48;
+                     else temp += 55;
+        hex_values[i] = temp;
+        i++;
+        decimal = decimal / 16;
+    end
+
+    variable hex_string = "";
+    if negative then hex_string = "-";
+    for i = i - 1; i >= 0; i--;
+        hex_string += sprintf("%c", hex_values[i]);
+    return hex_string;
+end
