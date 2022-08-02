@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/HexToDecimal.h"
+#include "Common/Convert/Hexadecimal.h"
 #include "Common/Text/Padding.h"
 
 #define rgb_int_to_float(rgb_int)   ((0.0 + rgb_int) / 255)
@@ -131,3 +131,5 @@ end
 #define rgb_extract_red_float(combined_rgb)   rgb_int_to_float(rgb_extract_red_int(combined_rgb))
 #define rgb_extract_green_float(combined_rgb) rgb_int_to_float(rgb_extract_green_int(combined_rgb))
 #define rgb_extract_blue_float(combined_rgb)  rgb_int_to_float(rgb_extract_blue_int(combined_rgb))
+
+// #define rgb_normalized_to_hex(normalized) "TODO"
