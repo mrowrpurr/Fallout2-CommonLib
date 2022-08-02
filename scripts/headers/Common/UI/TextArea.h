@@ -9,7 +9,7 @@
 */
 
 #include "sfall/define_extra.h"
-#include "Common/UI/TextWidth.h"
+#include "Common/UI/TextWidthSubstring.h"
 #include "Common/Color/NormalizedRGBColor.h"
 
 /*
@@ -28,26 +28,57 @@
 #define TextArea_DefaultFont_get(textarea) (textarea.font)
 
 /*
-    Non-visible lines
+    Lines of text
 */
 
+inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
+    variable total_added_text_characters_count; 
+    variable line_length = strlen(line_text);
+    variable width       = text_area.width;
+    while total_added_text_characters_count < line_length do begin
+
+        variable text_to_attempt_to_add;
+        if total_added_text_characters_count == 0 then
+            text_to_attempt_to_add = line_text;
+        else
+            text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
+
+        variable text_to_add = get_text_width_substring_with_separator(line_text, width, text_area.font);
+        
+        variable text_to_add_length = strlen(text_to_add);
+        if text_to_add_length == 0 then begin
+            // TODO REMOVE THE Waterchip: prefix here!
+            debug_msg("Waterchip: [TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
+            break;
+        end
+        
+        total_added_text_characters_count += text_to_add_length;
+        call array_push(text_area.visible_lines, text_to_add);
+        call array_push(text_area.visible_line_colors, normalized_line_color);
+    end
+end
+
 // Adds a line (using the default line color)
-// Does *NOT* automatically update visible lines or render
-#define TextArea_AddLine(textarea, text) \
-    begin \
-        call array_push(textarea.all_lines, text); \
-        call array_push(textarea.line_colors, text_area.color); \
-    end \
-    false
+procedure TextArea_AddLine(variable text_area, variable text) begin
+    call array_push(text_area.all_lines, text);
+    call array_push(text_area.line_colors, text_area.color);
+    call __TextArea_AddVisibleLine(text_area, text, text_area.color);
+end
 
 // Adds a line using the provided color (formatted as HTML hex color string)
-// Does *NOT* automatically update visible lines or render
-#define TextArea_AddColoredLine(textarea, text, hex_color) \
-    begin \
-        call array_push(textarea.all_lines, text); \
-        call array_push(textarea.line_colors, rgb_normalize_hex(hex_color)); \
-    end \
-    false
+procedure TextArea_AddColoredLine(variable text_area, variable text, variable hex_color) begin
+    variable normalized_rgb_color = rgb_normalize_hex(hex_color);
+    call array_push(text_area.all_lines, text);
+    call array_push(text_area.line_colors, normalized_rgb_color);
+    call __TextArea_AddVisibleLine(text_area, text, normalized_rgb_color);
+end
+
+procedure TextArea_ClearLines(variable text_area) begin
+    resize_array(text_area.all_lines,           0);
+    resize_array(text_area.line_colors,         0);
+    resize_array(text_area.visible_lines,       0);
+    resize_array(text_area.visible_line_colors, 0);
+end
 
 /*
     ...........
@@ -71,9 +102,12 @@ procedure TextArea_Create(variable defaults = 0) begin
     else
         text_area.color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
 
-    // Font
-    if not text_area.font then
-        text_area.font = __TEXT_AREA_DEFAULT_FONT;
+    if not text_area.font   then text_area.font   = __TEXT_AREA_DEFAULT_FONT;
+    if not text_area.width  then text_area.width  = get_screen_width;
+    if not text_area.height then text_area.height = get_screen_height;
+
+    // TODO: make the fields which store lines and colors "private" by staring with .__
+    // TODO: rename all_lines/line_colors to something like all_line_colors for consistency with visible* fields
 
     // Stores all lines 
     text_area.all_lines = [];
@@ -151,22 +185,4 @@ end
 
 ///////////////////////////////////////////////////////////////
 
-procedure __TextArea_RecalculateVisibleLines(variable text_area) begin
-    // // Calculate new arrays
-    // variable visible_lines       = []; fix_array(visible_lines);
-    // variable visible_line_colors = []; fix_array(visible_line_colors);
 
-    // variable non_visible_line_index;
-    // while non_visible_line_index < text_area.all_lines do begin
-    //     variable non_visible_line_original_character_count = strlen(text_area.all_lines[non_visible_line_index]);
-
-    // end
-
-    // // Replace array pointers
-    // variable previous_visible_lines       = text_area.visible_lines;
-    // variable previous_visible_line_colors = text_area.visible_line_colors;
-    // text_area.visible_lines       = visible_lines;
-    // text_area.visible_line_colors = visible_line_colors;
-    // free_array(previous_visible_lines);
-    // free_array(previous_visible_line_colors);
-end
