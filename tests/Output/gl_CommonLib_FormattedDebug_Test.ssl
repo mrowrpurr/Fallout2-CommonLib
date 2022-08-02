@@ -1,9 +1,6 @@
 #include "Waterchip.h"
-#include "Common\Logger.h"
-#include "Common\Test\LoggerTestHelper.h"
-
-#include "sfall/lib.arrays.h"
-#include "sfall/lib.strings.h"
+#include "Logger.h"
+#include "LoggerTestHelper.h"
 
 // Mock debug() output and send it to Logger (which has test logs enabled)
 #define __formatted_debug_output(output) log_info(output)

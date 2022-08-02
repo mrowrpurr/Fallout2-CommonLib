@@ -1,12 +1,9 @@
 #include "Waterchip.h"
-#include "Common/UI/RGBColor.h"
+#include "Common/Color/RGBColor.h"
 
 #define hex(hex_string) HexToDecimal(hex_string)
 
 describe("RGBColor") begin
-
-    variable normalized;
-
     it("can get full-length 6-character HTML color hex string given triplets") begin
         // For 6, return what we're provided
         expect(rgb_hex_string("abcdef")) to_equal("abcdef");
@@ -67,34 +64,16 @@ describe("RGBColor") begin
     end
 
     it("can get RGB float values of RGB from hex color") begin
-        expect(rgb_red_from_hex("00ffff"))   to_equal(0.0);
-        expect(rgb_green_from_hex("ff00ff")) to_equal(0.0);
-        expect(rgb_blue_from_hex("ffff00"))  to_equal(0.0);
+        expect(rgb_red_float_from_hex("00ffff"))   to_equal(0.0);
+        expect(rgb_green_float_from_hex("ff00ff")) to_equal(0.0);
+        expect(rgb_blue_float_from_hex("ffff00"))  to_equal(0.0);
 
-        expect(rgb_red_from_hex("ff0000"))   to_equal(1.0);
-        expect(rgb_green_from_hex("00ff00")) to_equal(1.0);
-        expect(rgb_blue_from_hex("0000ff"))  to_equal(1.0);
+        expect(rgb_red_float_from_hex("ff0000"))   to_equal(1.0);
+        expect(rgb_green_float_from_hex("00ff00")) to_equal(1.0);
+        expect(rgb_blue_float_from_hex("0000ff"))  to_equal(1.0);
 
-        expect(rgb_red_from_hex("abcdef"))   to_equal(171.0 / 255); // ab=171
-        expect(rgb_green_from_hex("abcdef")) to_equal(205.0 / 255); // cd=205
-        expect(rgb_blue_from_hex("abcdef"))  to_equal(239.0 / 255); // ef=239
-    end
-
-    it("can normalize RGB hex into a single float and extract RGB pieces") begin
-        normalized = rgb_normalize_hex("abcdef");
-        expect(rgb_extract_red(normalized))   to_equal(171.0 / 255); // ab=171
-        expect(rgb_extract_green(normalized)) to_equal(205.0 / 255); // cd=205
-        expect(rgb_extract_blue(normalized))  to_equal(239.0 / 255); // ef=239
-    end
-
-    it("can normalize RGB floats into a single float and extract RGB pieces") begin
-        normalized = rgb_normalize_floats(
-            rgb_red_from_hex("abcdef"),
-            rgb_green_from_hex("abcdef"),
-            rgb_blue_from_hex("abcdef")
-        );
-        expect(rgb_extract_red(normalized))   to_equal(171.0 / 255); // ab=171
-        expect(rgb_extract_green(normalized)) to_equal(205.0 / 255); // cd=205
-        expect(rgb_extract_blue(normalized))  to_equal(239.0 / 255); // ef=239
+        expect(rgb_red_float_from_hex("abcdef"))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_green_float_from_hex("abcdef")) to_equal(205.0 / 255); // cd=205
+        expect(rgb_blue_float_from_hex("abcdef"))  to_equal(239.0 / 255); // ef=239
     end
 end
