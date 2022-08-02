@@ -34,7 +34,7 @@ describe("TextArea") begin
         expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
 
         // Font defaults to 101, most commonly used font
-        expect(TextArea_DefaultFont_get(text_area)) to_equal(101);
+        expect(text_area.font) to_equal(101);
 
         // x,y default to 0,0
         expect(text_area.x) to_equal(0);
@@ -47,12 +47,21 @@ describe("TextArea") begin
 
     it("can provide defaults when creating") begin
         text_area = create_textarea({
-            "color": "#abc",
-            "font":  103
+            "color":  "#abc",
+            "font":   103,
+            "height": 123,
+            "width":  456,
+            "x":      69,
+            "y":      420
         });
 
+        expect(text_area.font)   to_equal(103);
+        expect(text_area.height) to_equal(123);
+        expect(text_area.width)  to_equal(456);
+        expect(text_area.x)      to_equal(69);
+        expect(text_area.y)      to_equal(420);
+
         expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
-        expect(TextArea_DefaultFont_get(text_area))  to_equal(103);
     end
 
     it("can provide custom name for text area (its window name)") begin

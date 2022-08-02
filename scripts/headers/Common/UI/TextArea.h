@@ -12,50 +12,15 @@
 #include "Common/UI/TextWidthSubstring.h"
 #include "Common/Color/NormalizedRGBColor.h"
 
-/*
-    Default Color
-*/
-
+#define __TEXT_AREA_DEFAULT_FONT                 (101)
 #define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
+#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX  "CommonLibUiTextArea_"
+
 #define TextArea_DefaultColor_get(textarea) rgb_normalized_to_hex(textarea.color)
 #define TextArea_DefaultColor_set(textarea, hex_color) textarea.color = rgb_normalize_hex(hex_color)
 
-/*
-    Default Font
-*/
-
-#define __TEXT_AREA_DEFAULT_FONT 101
-#define TextArea_DefaultFont_get(textarea) (textarea.font)
-
-/*
-    Lines of text
-*/
-
-inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
-    variable total_added_text_characters_count; 
-    variable line_length = strlen(line_text);
-    variable width       = text_area.width;
-    while total_added_text_characters_count < line_length do begin
-
-        variable text_to_attempt_to_add;
-        if total_added_text_characters_count == 0 then
-            text_to_attempt_to_add = line_text;
-        else
-            text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
-
-        variable text_to_add = get_text_width_substring_with_separator(text_to_attempt_to_add, width, text_area.font);
-        
-        variable text_to_add_length = strlen(text_to_add);
-        if text_to_add_length == 0 then begin
-            debug_msg("[TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
-            break;
-        end
-        
-        total_added_text_characters_count += text_to_add_length;
-        call array_push(text_area.visible_lines, text_to_add);
-        call array_push(text_area.visible_line_colors, normalized_line_color);
-    end
-end
+// @private
+procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color);
 
 // Adds a line (using the default line color)
 procedure TextArea_AddLine(variable text_area, variable text) begin
@@ -64,7 +29,7 @@ procedure TextArea_AddLine(variable text_area, variable text) begin
     call __TextArea_AddVisibleLine(text_area, text, text_area.color);
 end
 
-// Adds a line using the provided color (formatted as HTML hex color string)
+// Adds a line using provided color (formatted as HTML hex color string)
 procedure TextArea_AddColoredLine(variable text_area, variable text, variable hex_color) begin
     variable normalized_rgb_color = rgb_normalize_hex(hex_color);
     call array_push(text_area.all_lines, text);
@@ -72,6 +37,7 @@ procedure TextArea_AddColoredLine(variable text_area, variable text, variable he
     call __TextArea_AddVisibleLine(text_area, text, normalized_rgb_color);
 end
 
+// Clears all lines (visible and non-visible)
 procedure TextArea_ClearLines(variable text_area) begin
     resize_array(text_area.all_lines,           0);
     resize_array(text_area.line_colors,         0);
@@ -82,8 +48,6 @@ end
 /*
     ...........
 */
-
-#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX "CommonLibUiTextArea_"
 
 
 procedure TextArea_Create(variable defaults = 0) begin
@@ -175,13 +139,30 @@ procedure TextArea_Destroy(variable text_area) begin
 
 end
 
-/*
-    Visible Line Calculation
-*/
+// @private
+// Called when adding lines via TextArea_AddLine or TextArea_AddColoredLine
+inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
+    variable total_added_text_characters_count; 
+    variable line_length = strlen(line_text);
+    variable width       = text_area.width;
+    while total_added_text_characters_count < line_length do begin
 
-///////////////////////////////////////////////////////////////
-// TODO extract me
+        variable text_to_attempt_to_add;
+        if total_added_text_characters_count == 0 then
+            text_to_attempt_to_add = line_text;
+        else
+            text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
 
-///////////////////////////////////////////////////////////////
-
-
+        variable text_to_add = get_text_width_substring_with_separator(text_to_attempt_to_add, width, text_area.font);
+        
+        variable text_to_add_length = strlen(text_to_add);
+        if text_to_add_length == 0 then begin
+            debug_msg("[TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
+            break;
+        end
+        
+        total_added_text_characters_count += text_to_add_length;
+        call array_push(text_area.visible_lines, text_to_add);
+        call array_push(text_area.visible_line_colors, normalized_line_color);
+    end
+end
