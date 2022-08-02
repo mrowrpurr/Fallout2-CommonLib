@@ -1,7 +1,7 @@
 #include "Waterchip.h"
-#include "Common/HexToDecimal.h"
+#include "Common/Convert/Hexadecimal.h"
 
-describe("Hex to Decimal") begin
+describe("Hexadecimal Conversions") begin
 
     it("can get decimal value for hexadecimal string") begin
         // Single digit numbers
@@ -27,18 +27,18 @@ describe("Hex to Decimal") begin
         expect(HexToDecimal("ABCDEF0123456789")) to_equal(12379813738877118345);
     end
 
-    it("returns -1 if given a float") begin
+    it("HexToDecimal() returns -1 if given a float") begin
         expect(HexToDecimal(123.456)) to_equal(-1);
         expect(HexToDecimal(420.69))  to_equal(-1);
     end
 
-    it("returns integer value if given an int") begin
+    it("HexToDecimal() returns integer value if given an int") begin
         expect(HexToDecimal(1))   to_equal(1);
         expect(HexToDecimal(69))  to_equal(69);
         expect(HexToDecimal(420)) to_equal(420);
     end
 
-    it("returns -1 if given a string with invalid characters") begin
+    it("HexToDecimal() returns -1 if given a string with invalid characters") begin
         expect(HexToDecimal("qwerty")) to_equal(-1);
         expect(HexToDecimal("g"))      to_equal(-1);
     end

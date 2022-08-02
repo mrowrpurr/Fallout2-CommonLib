@@ -1,5 +1,5 @@
 #include "Waterchip.h"
-#include "Common/UI/RGBColor.h"
+#include "Common/Color/RGBColor.h"
 
 #define hex(hex_string) HexToDecimal(hex_string)
 
