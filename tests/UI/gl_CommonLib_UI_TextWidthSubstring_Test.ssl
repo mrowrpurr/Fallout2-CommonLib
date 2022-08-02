@@ -1,0 +1,26 @@
+#include "Waterchip.h"
+#include "Common/UI/TextWidthSubstring.h"
+
+describe("Getting substring of text which can be rendered with a font given a UI width") begin
+    it("works with various examples using Font 101") begin
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 1000, 101))
+            to_equal("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 100, 101))
+            to_equal("Hello World How ");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 50, 101))
+            to_equal("Hello Wo");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 25, 101))
+            to_equal("Hell");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 10, 101))
+            to_equal("H");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 5, 101))
+            to_equal("");
+    end
+
+    todo("works with various examples using Font 102");
+end

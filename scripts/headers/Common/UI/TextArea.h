@@ -9,6 +9,7 @@
 */
 
 #include "sfall/define_extra.h"
+#include "Common/UI/TextWidth.h"
 #include "Common/Color/NormalizedRGBColor.h"
 
 /*
@@ -16,8 +17,15 @@
 */
 
 #define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
-#define TextArea_DefaultColor_get(textarea) rgb_normalized_to_hex(textarea.default_color)
-#define TextArea_DefaultColor_set(textarea, hex_color) textarea.default_color = rgb_normalize_hex(hex_color)
+#define TextArea_DefaultColor_get(textarea) rgb_normalized_to_hex(textarea.color)
+#define TextArea_DefaultColor_set(textarea, hex_color) textarea.color = rgb_normalize_hex(hex_color)
+
+/*
+    Default Font
+*/
+
+#define __TEXT_AREA_DEFAULT_FONT 101
+#define TextArea_DefaultFont_get(textarea) (textarea.font)
 
 /*
     Non-visible lines
@@ -28,7 +36,7 @@
 #define TextArea_AddLine(textarea, text) \
     begin \
         call array_push(textarea.all_lines, text); \
-        call array_push(textarea.line_colors, text_area.default_color); \
+        call array_push(textarea.line_colors, text_area.color); \
     end \
     false
 
@@ -57,8 +65,15 @@ procedure TextArea_Create(variable defaults = 0) begin
         text_area.name = __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX + random(10000, 99999) + random(10000, 99999);
     end
 
-    // Set default color
-    text_area.default_color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
+    // Text color
+    if text_area.color then
+        text_area.color = rgb_normalize_hex(text_area.color);
+    else
+        text_area.color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
+
+    // Font
+    if not text_area.font then
+        text_area.font = __TEXT_AREA_DEFAULT_FONT;
 
     // Stores all lines 
     text_area.all_lines = [];
@@ -125,4 +140,33 @@ end
 
 procedure TextArea_Destroy(variable text_area) begin
 
+end
+
+/*
+    Visible Line Calculation
+*/
+
+///////////////////////////////////////////////////////////////
+// TODO extract me
+
+///////////////////////////////////////////////////////////////
+
+procedure __TextArea_RecalculateVisibleLines(variable text_area) begin
+    // // Calculate new arrays
+    // variable visible_lines       = []; fix_array(visible_lines);
+    // variable visible_line_colors = []; fix_array(visible_line_colors);
+
+    // variable non_visible_line_index;
+    // while non_visible_line_index < text_area.all_lines do begin
+    //     variable non_visible_line_original_character_count = strlen(text_area.all_lines[non_visible_line_index]);
+
+    // end
+
+    // // Replace array pointers
+    // variable previous_visible_lines       = text_area.visible_lines;
+    // variable previous_visible_line_colors = text_area.visible_line_colors;
+    // text_area.visible_lines       = visible_lines;
+    // text_area.visible_line_colors = visible_line_colors;
+    // free_array(previous_visible_lines);
+    // free_array(previous_visible_line_colors);
 end
