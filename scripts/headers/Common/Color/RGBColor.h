@@ -19,6 +19,8 @@ procedure rgb_hex_string(variable hex_string) begin
         end
     end
 
+    hex_string = string_toupper(hex_string); // Normalize to upper case
+
     variable length = strlen(hex_string);
     if length and substr(hex_string, 0, 1) == "#" then begin
         length--;
