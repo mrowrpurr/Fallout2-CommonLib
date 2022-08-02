@@ -17,8 +17,7 @@ end
 
 describe("TextArea") begin
 
-    variable text_area,
-             text_area2;
+    variable text_area;
 
     teardown begin
         if _text_areas then begin
@@ -66,7 +65,7 @@ describe("TextArea") begin
         expect(text_area.name) not_to_be_empty;
         expect(text_area.name) to_start_with("CommonLibUiTextArea_");
 
-        text_area2 = create_textarea;
+        variable text_area2 = create_textarea;
         expect(text_area2.name) not_to_be_empty;
         expect(text_area2.name) to_start_with("CommonLibUiTextArea_");
 
