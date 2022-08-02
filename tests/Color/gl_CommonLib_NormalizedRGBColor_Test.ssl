@@ -1,0 +1,44 @@
+#include "Waterchip.h"
+#include "Common/Color/NormalizedRGBColor.h"
+
+describe("NormalizedRGBColor") begin
+
+    variable normalized;
+
+    it("can normalize RGB hex into a single value and extract float RGB pieces") begin
+        normalized = rgb_normalize_hex("abcdef");
+        expect(rgb_extract_red_float(normalized))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_extract_green_float(normalized)) to_equal(205.0 / 255); // cd=205
+        expect(rgb_extract_blue_float(normalized))  to_equal(239.0 / 255); // ef=239
+    end
+
+    it("can normalize RGB floats into a single value and extract float RGB pieces") begin
+        normalized = rgb_normalize_floats(
+            rgb_red_float_from_hex("abcdef"),
+            rgb_green_float_from_hex("abcdef"),
+            rgb_blue_float_from_hex("abcdef")
+        );
+        expect(rgb_extract_red_float(normalized))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_extract_green_float(normalized)) to_equal(205.0 / 255); // cd=205
+        expect(rgb_extract_blue_float(normalized))  to_equal(239.0 / 255); // ef=239
+    end
+
+    it("can normalize RGB integers into a single value and extract float RGB pieces") begin
+        normalized = rgb_normalize_ints(
+            rgb_red_int_from_hex("abcdef"),
+            rgb_green_int_from_hex("abcdef"),
+            rgb_blue_int_from_hex("abcdef")
+        );
+        expect(rgb_extract_red_float(normalized))   to_equal(171.0 / 255); // ab=171
+        expect(rgb_extract_green_float(normalized)) to_equal(205.0 / 255); // cd=205
+        expect(rgb_extract_blue_float(normalized))  to_equal(239.0 / 255); // ef=239
+    end
+
+    it("can convert normalized RBG value into HTML hex color string") begin
+        expect(rgb_normalized_to_hex(rgb_normalize_ints(0,   0,   0)))   to_equal("000000"); 
+        expect(rgb_normalized_to_hex(rgb_normalize_ints(1,   15,  255))) to_equal("010FFF"); 
+        expect(rgb_normalized_to_hex(rgb_normalize_ints(0,   123, 0)))   to_equal("007B00"); 
+        expect(rgb_normalized_to_hex(rgb_normalize_ints(255, 255, 255))) to_equal("FFFFFF"); 
+    end
+end
+
