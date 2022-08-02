@@ -1,6 +1,6 @@
 #include "sfall/sfall.h"
 #include "sfall/dik.h"
-#include "Common/Logger.h"
+#include "Logger.h"
 #include "Common/UI/TextArea.h"
 
 variable text_area;

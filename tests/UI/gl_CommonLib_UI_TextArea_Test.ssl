@@ -1,0 +1,143 @@
+#include "Waterchip.h"
+#include "Common/UI/TextArea.h"
+
+variable _text_areas;
+
+// Helper to create text area.
+// Also sets it aside to be destroyed after the test runs.
+procedure create_textarea(variable options = 0) begin
+    if not _text_areas then begin
+        _text_areas = [];
+        fix_array(_text_areas);
+    end
+    variable text_area = TextArea_Create(options);
+    call array_push(_text_areas, text_area);
+    return text_area;
+end
+
+describe("TextArea") begin
+
+    variable text_area,
+             text_area2;
+
+    teardown begin
+        if _text_areas then begin
+            foreach text_area in _text_areas call TextArea_Destroy(text_area);
+            free_array(_text_areas);
+            _text_areas = 0;
+        end
+    end
+
+    it("can provide custom name for text area (its window name)") begin
+        text_area = create_textarea({ "name": "MyWindowName" });
+        expect(text_area.name) to_equal("MyWindowName");
+    end
+
+    it("generates a random, unique window name by default") begin
+        text_area = create_textarea;
+        expect(text_area.name) not_to_be_empty;
+        expect(text_area.name) to_start_with("CommonLibUiTextArea_");
+
+        text_area2 = create_textarea;
+        expect(text_area2.name) not_to_be_empty;
+        expect(text_area2.name) to_start_with("CommonLibUiTextArea_");
+
+        expect(text_area.name) not_to_equal(text_area2.name);
+    end
+
+    it("color defaults to white, if no default color configured") begin
+        text_area = create_textarea;
+        expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
+    end
+
+    it("can set default color") begin
+        text_area = create_textarea;
+        expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
+
+        TextArea_DefaultColor_set(text_area, "#abc");
+
+        expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
+
+        TextArea_DefaultColor_set(text_area, "0055cc");
+
+        expect(TextArea_DefaultColor_get(text_area)) to_equal("0055CC");
+    end
+
+    todo("can provide default color when instantiating text area");
+
+    it("can add lines of text (of default color)") begin
+        text_area = create_textarea;
+        expect(len_array(text_area.all_lines))           to_be_zero;
+        expect(len_array(text_area.line_colors))         to_be_zero;
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        TextArea_AddLine(text_area, "Hello, world!");
+
+        expect(len_array(text_area.all_lines))           to_equal(1);
+        expect(len_array(text_area.line_colors))         to_equal(1);
+        // Visible lines don't change unless you TextArea_Refresh() - or something...
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        expect(text_area.all_lines[0])   to_equal("Hello, world!");
+        expect(text_area.line_colors[0]) to_equal("255255255");
+
+        TextArea_DefaultColor_set(text_area, "#abc");
+        TextArea_AddLine(text_area, "Goodnight, moon!");
+
+        expect(len_array(text_area.all_lines))           to_equal(2);
+        expect(len_array(text_area.line_colors))         to_equal(2);
+        // Visible lines don't change unless you TextArea_Refresh() - or something...
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        expect(text_area.all_lines[0])   to_equal("Hello, world!");
+        expect(text_area.line_colors[0]) to_equal("255255255");
+        expect(text_area.all_lines[1])   to_equal("Goodnight, moon!");
+        expect(text_area.line_colors[1]) to_equal("170187204"); // #abc
+    end
+
+    it("can add lines of text of certain color") begin
+        text_area = create_textarea;
+        expect(len_array(text_area.all_lines))           to_be_zero;
+        expect(len_array(text_area.line_colors))         to_be_zero;
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        TextArea_AddColoredLine(text_area, "Hello, world!", "f0f");
+
+        expect(len_array(text_area.all_lines))           to_equal(1);
+        expect(len_array(text_area.line_colors))         to_equal(1);
+        // Visible lines don't change unless you TextArea_Refresh() - or something...
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        expect(text_area.all_lines[0])   to_equal("Hello, world!");
+        expect(text_area.line_colors[0]) to_equal("255000255");
+
+        TextArea_AddColoredLine(text_area, "Goodnight, moon!", "abcdef");
+
+        expect(len_array(text_area.all_lines))           to_equal(2);
+        expect(len_array(text_area.line_colors))         to_equal(2);
+        // Visible lines don't change unless you TextArea_Refresh() - or something...
+        expect(len_array(text_area.visible_lines))       to_be_zero;
+        expect(len_array(text_area.visible_line_colors)) to_be_zero;
+
+        expect(text_area.all_lines[0])   to_equal("Hello, world!");
+        expect(text_area.line_colors[0]) to_equal("255000255");
+        expect(text_area.all_lines[1])   to_equal("Goodnight, moon!");
+        expect(text_area.line_colors[1]) to_equal("171205239"); // #abcdef
+    end
+
+    todo("can get line count");
+    todo("can clear all lines");
+    todo("can remove most recent line");
+    todo("can remove line at index");
+    todo("modifying lines automatically modifies visible lines");
+    todo("can enable text wrapping of visible lines (default: on)");
+    todo("can scroll visible text up a given number of lines");
+    todo("can scroll visible text down a given number of lines");
+    todo("can scroll visible text up to the top");
+    todo("can scroll visible text down to the bottom");
+end

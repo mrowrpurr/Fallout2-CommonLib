@@ -9,26 +9,44 @@
 */
 
 #include "sfall/define_extra.h"
-#include "Common/UI/RGBColor.h"
+#include "Common/Color/NormalizedRGBColor.h"
 
-#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX "CommonLibUiTextArea_"
+/*
+    Default Color
+*/
 
 #define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
+#define TextArea_DefaultColor_get(textarea) rgb_normalized_to_hex(textarea.default_color)
+#define TextArea_DefaultColor_set(textarea, hex_color) textarea.default_color = rgb_normalize_hex(hex_color)
 
-#define TextArea_LineCount(textarea) \
-    (len_array(textarea.all_lines) if textarea else 0)
+/*
+    Non-visible lines
+*/
 
-#define TextArea_VisibleLineCount(textarea) \
-    (len_array(textarea.visible_lines) if textarea else 0)
-
-// Adds a line of defaukt line color
+// Adds a line (using the default line color)
 // Does *NOT* automatically update visible lines or render
 #define TextArea_AddLine(textarea, text) \
     begin \
         call array_push(textarea.all_lines, text); \
-        call array_push(textarea.line_colors, __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR); \
+        call array_push(textarea.line_colors, text_area.default_color); \
     end \
     false
+
+// Adds a line using the provided color (formatted as HTML hex color string)
+// Does *NOT* automatically update visible lines or render
+#define TextArea_AddColoredLine(textarea, text, hex_color) \
+    begin \
+        call array_push(textarea.all_lines, text); \
+        call array_push(textarea.line_colors, rgb_normalize_hex(hex_color)); \
+    end \
+    false
+
+/*
+    ...........
+*/
+
+#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX "CommonLibUiTextArea_"
+
 
 procedure TextArea_Create(variable defaults = 0) begin
     variable text_area = defaults if defaults else {};
@@ -38,6 +56,9 @@ procedure TextArea_Create(variable defaults = 0) begin
     if not text_area.name or strlen(text_area.name) == 0 then begin
         text_area.name = __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX + random(10000, 99999) + random(10000, 99999);
     end
+
+    // Set default color
+    text_area.default_color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
 
     // Stores all lines 
     text_area.all_lines = [];
