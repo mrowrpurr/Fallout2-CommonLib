@@ -22,5 +22,43 @@ describe("Getting substring of text which can be rendered with a font given a UI
             to_equal("");
     end
 
-    todo("works with various examples using Font 102");
+    it("works with various examples using Font 102") begin
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 1000, 102))
+            to_equal("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 100, 102))
+            to_equal("Hello World Ho");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 50, 102))
+            to_equal("Hello ");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 25, 102))
+            to_equal("Hell");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 10, 102))
+            to_equal("H");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 5, 102))
+            to_equal("");
+    end
+
+    it("works with various examples using Font 104") begin
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 1000, 104))
+            to_equal("Hello World How Are You And Whatnot? And a lot more text too! Lots and l");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 100, 104))
+            to_equal("Hello W");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 50, 104))
+            to_equal("Hell");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 25, 104))
+            to_equal("H");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 10, 104))
+            to_equal("");
+
+        expect(get_text_width_substring("Hello World How Are You And Whatnot? And a lot more text too! Lots and lots...", 5, 104))
+            to_equal("");
+    end
 end
