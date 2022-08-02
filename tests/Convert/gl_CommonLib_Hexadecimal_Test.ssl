@@ -3,7 +3,7 @@
 
 describe("Hexadecimal Conversions") begin
 
-    it("can get decimal value for hexadecimal string") begin
+    it("can convert hexadecimal string to decimal") begin
         // Single digit numbers
         expect(HexToDecimal("0"))                to_equal(0);
         expect(HexToDecimal("9"))                to_equal(9);
@@ -27,6 +27,20 @@ describe("Hexadecimal Conversions") begin
         expect(HexToDecimal("ABCDEF0123456789")) to_equal(12379813738877118345);
     end
 
+    it("can convert decimal to hexadecimal") begin
+        expect(DecimalToHex(0))                    to_equal("0");
+        expect(DecimalToHex(9))                    to_equal("9");
+        expect(DecimalToHex(10))                   to_equal("A");
+        expect(DecimalToHex(15))                   to_equal("F");
+        expect(DecimalToHex(170))                  to_equal("AA");
+        expect(DecimalToHex(175))                  to_equal("AF");
+        expect(DecimalToHex(234))                  to_equal("EA");
+        expect(DecimalToHex(255))                  to_equal("FF");
+        expect(DecimalToHex(123456))               to_equal("1E240");
+        expect(DecimalToHex(11259375))             to_equal("ABCDEF");
+        expect(DecimalToHex(1234567890))           to_equal("499602D2");
+    end
+
     it("HexToDecimal() returns -1 if given a float") begin
         expect(HexToDecimal(123.456)) to_equal(-1);
         expect(HexToDecimal(420.69))  to_equal(-1);
@@ -41,5 +55,26 @@ describe("Hexadecimal Conversions") begin
     it("HexToDecimal() returns -1 if given a string with invalid characters") begin
         expect(HexToDecimal("qwerty")) to_equal(-1);
         expect(HexToDecimal("g"))      to_equal(-1);
+    end
+
+    it("DecimalToHex() returns '-' signed hex for negative integers") begin
+        expect(DecimalToHex(-9))                    to_equal("-9");
+        expect(DecimalToHex(-170))                  to_equal("-AA");
+        expect(DecimalToHex(-123456))               to_equal("-1E240");
+    end
+
+    it("DecimalToHex() returns hex for rounded float when provided a float") begin
+        expect(DecimalToHex(123.456)) to_equal("7B");  // round down
+        expect(DecimalToHex(420.69))  to_equal("1A5"); // round up
+    end
+
+    it("DecimalToHex() returns '-' signed hex for negative floats") begin
+        expect(DecimalToHex(-123.456)) to_equal("-7B");  // round down
+        expect(DecimalToHex(-420.69))  to_equal("-1A5"); // round up
+    end
+
+    it("DecimalToHex() returns string value if given an string") begin
+        expect(DecimalToHex("hi"))         to_equal("hi");
+        expect(DecimalToHex("sixty nine")) to_equal("sixty nine");
     end
 end
