@@ -43,12 +43,11 @@ inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_tex
         else
             text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
 
-        variable text_to_add = get_text_width_substring_with_separator(line_text, width, text_area.font);
+        variable text_to_add = get_text_width_substring_with_separator(text_to_attempt_to_add, width, text_area.font);
         
         variable text_to_add_length = strlen(text_to_add);
         if text_to_add_length == 0 then begin
-            // TODO REMOVE THE Waterchip: prefix here!
-            debug_msg("Waterchip: [TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
+            debug_msg("[TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
             break;
         end
         

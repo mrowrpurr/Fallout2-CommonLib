@@ -91,6 +91,7 @@ procedure get_text_width_substring_with_separator(variable text, variable width,
         end else begin
             high   = middle - 1;
             middle = (low + high) / 2;
+            if middle == 0 then middle = 1; // Try again if the middle is 0 (using 1).
             // if we hit this conditional 2x in a row with the same value, then return the most recent match *under* desired length
             if most_recent_middle_over_width == middle then return string_join(array_slice(text_parts, 0, most_recent_middle_under_width), separator);
             most_recent_middle_over_width = middle;
