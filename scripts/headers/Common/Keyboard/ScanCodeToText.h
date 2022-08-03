@@ -3,9 +3,6 @@
 #define KEYBOARD_DX_SCAN_CODE_TO_TEXT_INI_PATH(language_code) \
     ("mods/CommonLib/Keyboard/ScanCodeToText." + language_code + ".ini")
 
-#define KEYBOARD_TEXT_TO_DX_SCAN_CODE_INI_PATH(language_code) \
-    ("mods/CommonLib/Keyboard/TextToScanCode." + language_code + ".ini")
-
 procedure scan_code_to_text(variable dx_scan_code, variable language_code = "en", variable shift = false) begin
     variable text = get_ini_string(
         KEYBOARD_DX_SCAN_CODE_TO_TEXT_INI_PATH(language_code) + "|ScanCodeToText|" + dx_scan_code
@@ -14,7 +11,7 @@ procedure scan_code_to_text(variable dx_scan_code, variable language_code = "en"
     if text == "" then begin
         // Hmm, no result?
         // Does the file even exist? Try getting scan code 1 (which always exists)
-        variable file_existence_check_result =  get_ini_string(
+        variable file_existence_check_result = get_ini_string(
             KEYBOARD_DX_SCAN_CODE_TO_TEXT_INI_PATH(language_code) + "|ScanCodeToText|1"
         );
 
