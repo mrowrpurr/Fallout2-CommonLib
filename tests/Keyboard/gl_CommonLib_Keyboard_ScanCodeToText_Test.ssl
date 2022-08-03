@@ -2,7 +2,7 @@
 #include "Common/Keyboard/ScanCodeToText.h"
 
 describe("ScanCodeToText") begin
-    test("English keyboard - without Shift key") begin
+    test("English keyboard") begin
         variable shift = true;
 
         expect(scan_code_to_text(1, "en")) to_equal("ESCAPE");
