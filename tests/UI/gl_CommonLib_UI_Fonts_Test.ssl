@@ -1,0 +1,41 @@
+#include "Waterchip.h"
+#include "Common/UI/Fonts.h"
+
+describe("Fonts") begin
+    it("can test if a value is a valid font number") begin
+        expect(is_valid_font(100)) to_be_true;
+        expect(is_valid_font(101)) to_be_true;
+        expect(is_valid_font(102)) to_be_true;
+        expect(is_valid_font(103)) to_be_true;
+        expect(is_valid_font(104)) to_be_true;
+
+        expect(is_valid_font(0))   to_be_false;
+        expect(is_valid_font(1))   to_be_false;
+        expect(is_valid_font(2))   to_be_false;
+        expect(is_valid_font(69))  to_be_false;
+        expect(is_valid_font(420)) to_be_false;
+    end
+
+    it("can get list of valid font numbers") begin
+        variable font_numbers = all_valid_fonts;
+
+        expect(len_array(font_numbers)) to_equal(5);
+        expect(font_numbers[0])         to_equal(100);
+        expect(font_numbers[1])         to_equal(101);
+        expect(font_numbers[2])         to_equal(102);
+        expect(font_numbers[3])         to_equal(103);
+        expect(font_numbers[4])         to_equal(104);
+    end
+
+    it("can get the line height of a given font") begin
+        expect(font_line_height(100)) to_equal(12);
+        expect(font_line_height(101)) to_equal(10);
+        expect(font_line_height(102)) to_equal(28);
+        expect(font_line_height(103)) to_equal(20);
+        expect(font_line_height(104)) to_equal(26);
+
+        expect(font_line_height(0))  to_equal(0);
+        expect(font_line_height(1))  to_equal(0);
+        expect(font_line_height(69)) to_equal(0);
+    end
+end
