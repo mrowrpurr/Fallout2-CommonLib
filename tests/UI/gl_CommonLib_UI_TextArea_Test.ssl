@@ -308,6 +308,9 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
+        expect(text_area.visible_lines_start_index) to_equal(0);
+        expect(text_area.visible_line_count)        to_equal(2);
+
         expect(len_array(text_area.all_lines))           to_equal(2);
         expect(text_area.all_lines[0])                   to_equal("Hello, world! Hello, world! Hello, world!");
         expect(text_area.all_lines[1])                   to_equal("Goodnight, moon! Goodnight, moon!");
@@ -328,12 +331,9 @@ describe("TextArea") begin
         expect(text_area.all_lines[2])         to_equal("More text!");
 
         // But it is NOT visible! the text area isn't tall enough to display it
-        expect(len_array(text_area.visible_lines))       to_equal(2);
-        expect(len_array(text_area.visible_line_colors)) to_equal(2);
-        expect(text_area.visible_lines[0])               to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area.visible_lines[1])               to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area.visible_line_colors[0])         to_equal("000255000");
-        expect(text_area.visible_line_colors[1])         to_equal("255000255");
+        // UPDATE: this just uses a cursor index now :)
+        expect(text_area.visible_lines_start_index) to_equal(0);
+        expect(text_area.visible_line_count)        to_equal(2);
     end
 
     it("can calculate visible lines based on text area height (autoscroll: true)") begin
@@ -347,6 +347,9 @@ describe("TextArea") begin
 
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
+
+        expect(text_area.visible_lines_start_index) to_equal(0);
+        expect(text_area.visible_line_count)        to_equal(2);
 
         expect(len_array(text_area.all_lines))           to_equal(2);
         expect(text_area.all_lines[0])                   to_equal("Hello, world! Hello, world! Hello, world!");
@@ -368,13 +371,14 @@ describe("TextArea") begin
         expect(text_area.all_lines[2])         to_equal("More text!");
 
         // Ah ha! Now the first visible line is no longer included in visible lines! It automatically scrolled!
-        expect(len_array(text_area.visible_lines))       to_equal(2);
-        expect(len_array(text_area.visible_line_colors)) to_equal(2);
-        expect(text_area.visible_lines[0])               to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area.visible_lines[1])               to_equal("More text!");
-        expect(text_area.visible_line_colors[0])         to_equal("255000255");
-        expect(text_area.visible_line_colors[1])         to_equal("000255000");
+        // UPDATE: this just uses a cursor index now :)
+        expect(text_area.visible_lines_start_index) to_equal(1);
+        expect(text_area.visible_line_count)        to_equal(2);
     end
 
     todo("scroll up/down to change visible lines shown");
+
+    todo("can specify max lines");
+
+    todo("combine wrapping with autoscroll and max lines");
 end
