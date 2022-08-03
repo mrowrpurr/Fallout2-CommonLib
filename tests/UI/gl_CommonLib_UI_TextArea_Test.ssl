@@ -34,7 +34,7 @@ describe("TextArea") begin
         expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
 
         // Font defaults to 101, most commonly used font
-        expect(text_area.font) to_equal(101);
+        expect(text_area.font)        to_equal(101);
         expect(text_area.line_height) to_equal(10); // Line Height of font 101
 
         // x,y default to 0,0

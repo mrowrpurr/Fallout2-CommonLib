@@ -9,6 +9,7 @@
 */
 
 #include "sfall/define_extra.h"
+#include "Common/UI/Fonts.h"
 #include "Common/UI/TextWidthSubstring.h"
 #include "Common/Color/NormalizedRGBColor.h"
 
@@ -45,10 +46,6 @@ procedure TextArea_ClearLines(variable text_area) begin
     resize_array(text_area.visible_line_colors, 0);
 end
 
-/*
-    ...........
-*/
-
 
 procedure TextArea_Create(variable defaults = 0) begin
     variable text_area = defaults if defaults else {};
@@ -59,15 +56,21 @@ procedure TextArea_Create(variable defaults = 0) begin
         text_area.name = __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX + random(10000, 99999) + random(10000, 99999);
     end
 
-    // Text color
     if text_area.color then
         text_area.color = rgb_normalize_hex(text_area.color);
     else
         text_area.color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
 
-    if not text_area.font   then text_area.font   = __TEXT_AREA_DEFAULT_FONT;
     if not text_area.width  then text_area.width  = get_screen_width;
     if not text_area.height then text_area.height = get_screen_height;
+
+    if not text_area.font or not is_valid_font(text_area.font) then
+        text_area.font = __TEXT_AREA_DEFAULT_FONT;
+
+    variable height_of_font = font_line_height(text_area.font);
+
+    if not text_area.line_height or text_area.line_height < height_of_font then
+        text_area.line_height = height_of_font;
 
     // TODO: make the fields which store lines and colors "private" by staring with .__
     // TODO: rename all_lines/line_colors to something like all_line_colors for consistency with visible* fields
@@ -91,11 +94,6 @@ procedure TextArea_Create(variable defaults = 0) begin
     fix_array(text_area.visible_line_colors);
 
     return text_area;
-end
-
-// Set a bit to note that it's rendering!
-procedure TextArea_Render(variable text_area) begin
-
 end
 
 procedure TextArea_DestroyUI(variable text_area) begin
