@@ -46,7 +46,6 @@ procedure TextArea_ClearLines(variable text_area) begin
     resize_array(text_area.visible_line_colors, 0);
 end
 
-
 procedure TextArea_Create(variable defaults = 0) begin
     variable text_area = defaults if defaults else {};
     fix_array(text_area);
@@ -139,28 +138,37 @@ end
 
 // @private
 // Called when adding lines via TextArea_AddLine or TextArea_AddColoredLine
+// Inline because it's only used from 2 places (adding color and non-color lines)
+// and would prefer not to add an additional procedure invocation on line addition.
 inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
-    variable total_added_text_characters_count; 
-    variable line_length = strlen(line_text);
-    variable width       = text_area.width;
-    while total_added_text_characters_count < line_length do begin
+    variable line_height = text_area.line_height;
+    variable current_total_line_height = len_array(text_area.visible_lines) * line_height;
+    variable available_vertical_space  = text_area.height - current_total_line_height;
 
-        variable text_to_attempt_to_add;
-        if total_added_text_characters_count == 0 then
-            text_to_attempt_to_add = line_text;
-        else
-            text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
+    if available_vertical_space >= line_height then begin
+        variable total_added_text_characters_count; 
+        variable line_length = strlen(line_text);
+        variable width       = text_area.width;
 
-        variable text_to_add = get_text_width_substring_with_separator(text_to_attempt_to_add, width, text_area.font);
-        
-        variable text_to_add_length = strlen(text_to_add);
-        if text_to_add_length == 0 then begin
-            debug_msg("[TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
-            break;
+        while total_added_text_characters_count < line_length do begin
+
+            variable text_to_attempt_to_add;
+            if total_added_text_characters_count == 0 then
+                text_to_attempt_to_add = line_text;
+            else
+                text_to_attempt_to_add = substr(line_text, total_added_text_characters_count, 0);
+
+            variable text_to_add = get_text_width_substring_with_separator(text_to_attempt_to_add, width, text_area.font);
+            
+            variable text_to_add_length = strlen(text_to_add);
+            if text_to_add_length == 0 then begin
+                debug_msg("[TextArea] width " + width + " of text area too small to render text '" + text_to_attempt_to_add + "'");
+                break;
+            end
+            
+            total_added_text_characters_count += text_to_add_length;
+            call array_push(text_area.visible_lines, text_to_add);
+            call array_push(text_area.visible_line_colors, normalized_line_color);
         end
-        
-        total_added_text_characters_count += text_to_add_length;
-        call array_push(text_area.visible_lines, text_to_add);
-        call array_push(text_area.visible_line_colors, normalized_line_color);
     end
 end
