@@ -141,17 +141,17 @@ end
 // Inline because it's only used from 2 places (adding color and non-color lines)
 // and would prefer not to add an additional procedure invocation on line addition.
 inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
+    variable autoscroll  = text_area.autoscroll;
     variable line_height = text_area.line_height;
     variable current_total_line_height = len_array(text_area.visible_lines) * line_height;
     variable available_vertical_space  = text_area.height - current_total_line_height;
 
-    if available_vertical_space >= line_height then begin
+    if not autoscroll and available_vertical_space >= line_height then begin
         variable total_added_text_characters_count; 
         variable line_length = strlen(line_text);
         variable width       = text_area.width;
 
         while total_added_text_characters_count < line_length do begin
-
             variable text_to_attempt_to_add;
             if total_added_text_characters_count == 0 then
                 text_to_attempt_to_add = line_text;
@@ -167,6 +167,27 @@ inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_tex
             end
             
             total_added_text_characters_count += text_to_add_length;
+
+            if autoscroll then begin
+                current_total_line_height = len_array(text_area.visible_lines) * line_height;
+                available_vertical_space  = text_area.height - current_total_line_height;
+                // If we add this line, will we go OVER the vertical boundary?
+                // If so, remove the first line (text and color)
+                if available_vertical_space - line_height < 0 then begin
+                    // How can we make this more efficient?
+                    // Making a new array would be O(n) to perform a clone (via slice)
+                    // Doing this cut is also O(n) to move all of the items
+                    // We could make these arrays larger than they need to be
+                    // and use an index to reference which lines are visible
+                    // (still needs to be separate from all_lines because these
+                    //  support line wrapping)
+                    // If/when performance becomes an issue here, move to using
+                    // a larger array and tracking which lines are visible.
+                    call array_cut(text_area.visible_line, 0, 1);
+                    call array_cut(text_area.visible_line_colors, 0, 1);
+                end
+            end
+
             call array_push(text_area.visible_lines, text_to_add);
             call array_push(text_area.visible_line_colors, normalized_line_color);
         end
