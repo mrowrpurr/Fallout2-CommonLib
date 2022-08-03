@@ -35,6 +35,7 @@ describe("TextArea") begin
 
         // Font defaults to 101, most commonly used font
         expect(text_area.font) to_equal(101);
+        expect(text_area.line_height) to_equal(10); // Line Height of font 101
 
         // x,y default to 0,0
         expect(text_area.x) to_equal(0);
@@ -47,21 +48,54 @@ describe("TextArea") begin
 
     it("can provide defaults when creating") begin
         text_area = create_textarea({
-            "color":  "#abc",
-            "font":   103,
-            "height": 123,
-            "width":  456,
-            "x":      69,
-            "y":      420
+            "color":       "#abc",
+            "font":        103,
+            "line_height": 50,
+            "height":      123,
+            "width":       456,
+            "x":           69,
+            "y":           420
         });
 
-        expect(text_area.font)   to_equal(103);
-        expect(text_area.height) to_equal(123);
-        expect(text_area.width)  to_equal(456);
-        expect(text_area.x)      to_equal(69);
-        expect(text_area.y)      to_equal(420);
+        expect(text_area.font)        to_equal(103);
+        expect(text_area.line_height) to_equal(50);
+        expect(text_area.height)      to_equal(123);
+        expect(text_area.width)       to_equal(456);
+        expect(text_area.x)           to_equal(69);
+        expect(text_area.y)           to_equal(420);
 
         expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
+    end
+
+    it("defaults line-height to minimum line-height for font") begin
+        text_area = create_textarea({ "font": 100 });
+        expect(text_area.font)        to_equal(100);
+        expect(text_area.line_height) to_equal(12);
+
+        text_area = create_textarea({ "font": 101 });
+        expect(text_area.font)        to_equal(101);
+        expect(text_area.line_height) to_equal(10);
+
+        text_area = create_textarea({ "font": 102 });
+        expect(text_area.font)        to_equal(102);
+        expect(text_area.line_height) to_equal(28);
+
+        text_area = create_textarea({ "font": 103 });
+        expect(text_area.font)        to_equal(103);
+        expect(text_area.line_height) to_equal(20);
+
+        text_area = create_textarea({ "font": 104 });
+        expect(text_area.font)        to_equal(104);
+        expect(text_area.line_height) to_equal(26);
+
+        // If you provide an invalid font, the game defaults to 101 (so do we!)
+        text_area = create_textarea({ "font": 69 });
+        expect(text_area.font)        to_equal(101);
+        expect(text_area.line_height) to_equal(10);
+    end
+
+    xit("defaults line-height to minimum line-height for font, even if set manually") begin
+
     end
 
     it("can provide custom name for text area (its window name)") begin
