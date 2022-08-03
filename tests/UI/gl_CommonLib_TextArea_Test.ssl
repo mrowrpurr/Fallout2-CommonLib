@@ -98,10 +98,6 @@ describe("TextArea") begin
         expect(text_area.line_height) to_equal(10);
     end
 
-    xit("defaults line-height to minimum line-height for font, even if set manually") begin
-
-    end
-
     it("can provide custom name for text area (its window name)") begin
         text_area = create_textarea({ "name": "MyWindowName" });
         expect(text_area.name) to_equal("MyWindowName");
@@ -178,6 +174,8 @@ describe("TextArea") begin
     end
 
     it("can clear all lines") begin
+        fail("TODO - check that the start/current visible lines are updated!")
+
         text_area = create_textarea;
         expect(len_array(text_area.all_lines))           to_be_zero;
         expect(len_array(text_area.line_colors))         to_be_zero;
