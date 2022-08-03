@@ -1,5 +1,8 @@
 #pragma once
 
+#include "sfall/lib.arrays.h"
+#include "sfall/lib.strings.h"
+
 // TODO add an option to split on spaces for words
 
 procedure get_text_width_substring(variable text, variable width, variable font = 0) begin
