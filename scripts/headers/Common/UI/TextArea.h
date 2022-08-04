@@ -25,25 +25,27 @@ procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, vari
 
 // Adds a line (using the default line color)
 procedure TextArea_AddLine(variable text_area, variable text) begin
-    call array_push(text_area.all_lines, text);
-    call array_push(text_area.line_colors, text_area.color);
+    call array_push(text_area._original_lines, text);
+    call array_push(text_area._original_line_colors, text_area.color);
     call __TextArea_AddVisibleLine(text_area, text, text_area.color);
 end
 
 // Adds a line using provided color (formatted as HTML hex color string)
 procedure TextArea_AddColoredLine(variable text_area, variable text, variable hex_color) begin
     variable normalized_rgb_color = rgb_normalize_hex(hex_color);
-    call array_push(text_area.all_lines, text);
-    call array_push(text_area.line_colors, normalized_rgb_color);
+    call array_push(text_area._original_lines, text);
+    call array_push(text_area._original_line_colors, normalized_rgb_color);
     call __TextArea_AddVisibleLine(text_area, text, normalized_rgb_color);
 end
 
 // Clears all lines (visible and non-visible)
 procedure TextArea_ClearLines(variable text_area) begin
-    resize_array(text_area.all_lines,           0);
-    resize_array(text_area.line_colors,         0);
-    resize_array(text_area.visible_lines,       0);
-    resize_array(text_area.visible_line_colors, 0);
+    resize_array(text_area._original_lines, 0);
+    resize_array(text_area._original_line_colors, 0);
+    resize_array(text_area._visible_lines, 0);
+    resize_array(text_area._visible_line_colors, 0);
+    text_area._visible_lines_start_index = 0;
+    text_area._visible_line_count = 0;
 end
 
 procedure TextArea_Create(variable defaults = 0) begin
@@ -75,25 +77,25 @@ procedure TextArea_Create(variable defaults = 0) begin
     // TODO: rename all_lines/line_colors to something like all_line_colors for consistency with visible* fields
 
     // Stores all lines 
-    text_area.all_lines = [];
-    fix_array(text_area.all_lines);
+    text_area._original_lines = [];
+    fix_array(text_area._original_lines);
 
     // Stores colors of each line (shares index of all_lines)
     // Stored as 'normalized' RGB colors (use RGB normalize/extract functions)
-    text_area.line_colors = [];
-    fix_array(text_area.line_colors);
+    text_area._original_line_colors = [];
+    fix_array(text_area._original_line_colors);
 
     // Stores visible lines 
-    text_area.visible_lines = [];
-    fix_array(text_area.visible_lines);
+    text_area._visible_lines = [];
+    fix_array(text_area._visible_lines);
 
     // Stores colors of each line (shares index of visible_lines)
     // Stored as 'normalized' RGB colors (use RGB normalize/extract functions)
-    text_area.visible_line_colors = [];
-    fix_array(text_area.visible_line_colors);
+    text_area._visible_line_colors = [];
+    fix_array(text_area._visible_line_colors);
 
-    text_area.visible_lines_start_index = 0;
-    text_area.visible_line_count   = 0;
+    text_area._visible_lines_start_index = 0;
+    text_area._visible_line_count   = 0;
 
     return text_area;
 end
@@ -146,7 +148,7 @@ end
 inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
     variable autoscroll                = text_area.autoscroll;
     variable line_height               = text_area.line_height;
-    variable current_total_line_height = len_array(text_area.visible_lines) * line_height;
+    variable current_total_line_height = len_array(text_area._visible_lines) * line_height;
     variable available_vertical_space  = text_area.height - current_total_line_height;
     variable line_length               = strlen(line_text);
     variable width                     = text_area.width;
@@ -168,16 +170,16 @@ inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_tex
             break;
         end
         
-        current_total_line_height = len_array(text_area.visible_lines) * line_height;
+        current_total_line_height = len_array(text_area._visible_lines) * line_height;
         available_vertical_space  = text_area.height - current_total_line_height;
 
         if available_vertical_space - line_height >= 0 then
-            text_area.visible_line_count++; // There is enough visible space to display this line!
+            text_area._visible_line_count++; // There is enough visible space to display this line!
         else if autoscroll then
-            text_area.visible_lines_start_index++; // Move the index of visible lines down
+            text_area._visible_lines_start_index++; // Move the index of visible lines down
 
-        call array_push(text_area.visible_lines, text_to_add);
-        call array_push(text_area.visible_line_colors, normalized_line_color);
+        call array_push(text_area._visible_lines, text_to_add);
+        call array_push(text_area._visible_line_colors, normalized_line_color);
         
         total_added_text_characters_count += text_to_add_length;
     end
