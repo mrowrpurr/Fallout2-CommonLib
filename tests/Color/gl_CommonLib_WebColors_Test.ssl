@@ -1,0 +1,25 @@
+#include "Waterchip.h"
+#include "Common/Color/WebColors.h"
+
+describe("WebColors") begin
+    it("can get the hexcode for a HTML color name") begin
+        expect(webcolor_hex("does not exist")) to_equal(0);
+
+        expect(webcolor_hex("black")) to_equal("#000000");
+        expect(webcolor_hex("white")) to_equal("#FFFFFF");
+
+        expect(webcolor_hex("Black")) to_equal("#000000");
+        expect(webcolor_hex("White")) to_equal("#FFFFFF");
+
+        expect(webcolor_hex("BLACK")) to_equal("#000000");
+        expect(webcolor_hex("WHITE")) to_equal("#FFFFFF");
+
+        expect(webcolor_hex("deeppink")) to_equal("#FF1493");
+        expect(webcolor_hex("fuchsia")) to_equal("#FF00FF");
+        expect(webcolor_hex("magenta")) to_equal("#FF00FF");
+        expect(webcolor_hex("mediumvioletred")) to_equal("#C71585");
+
+        expect(webcolor_hex("deep pink")) to_equal("#FF1493");
+        expect(webcolor_hex("medium violetred")) to_equal("#C71585");
+    end
+end

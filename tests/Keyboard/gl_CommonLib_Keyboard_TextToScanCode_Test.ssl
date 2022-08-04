@@ -1,0 +1,50 @@
+#include "Waterchip.h"
+#include "Common/Keyboard/TextToScanCode.h"
+
+describe("TextToScanCode") begin
+    test("English keyboard") begin
+        expect(text_to_scan_code("ESCAPE")) to_equal(1);
+        expect(does_text_to_scan_code_require_shift("ESCAPE")) to_be_false;
+        expect(text_to_scan_code("1")) to_equal(2);
+        expect(does_text_to_scan_code_require_shift("1")) to_be_false;
+        expect(text_to_scan_code("!")) to_equal(2);
+        expect(does_text_to_scan_code_require_shift("!")) to_be_true;
+        // ...
+
+        expect(text_to_scan_code("^")) to_equal(7);
+        expect(does_text_to_scan_code_require_shift("^")) to_be_true;
+        expect(text_to_scan_code("(")) to_equal(10);
+        expect(does_text_to_scan_code_require_shift("(")) to_be_true;
+        expect(text_to_scan_code("_")) to_equal(12);
+        expect(does_text_to_scan_code_require_shift("_")) to_be_true;
+        expect(text_to_scan_code("+")) to_equal(13);
+        expect(does_text_to_scan_code_require_shift("+")) to_be_true;
+        expect(text_to_scan_code("=")) to_equal(13);
+        expect(does_text_to_scan_code_require_shift("=")) to_be_false;
+        // ...
+
+        expect(text_to_scan_code("q")) to_equal(16);
+        expect(does_text_to_scan_code_require_shift("q")) to_be_false;
+        expect(text_to_scan_code("Q")) to_equal(16);
+        expect(does_text_to_scan_code_require_shift("Q")) to_be_true;
+        // ...
+
+        expect(text_to_scan_code("LEFT_SHIFT")) to_equal(42);
+        expect(does_text_to_scan_code_require_shift("LEFT_SHIFT")) to_be_false;
+        expect(text_to_scan_code("RIGHT_SHIFT")) to_equal(54);
+        expect(does_text_to_scan_code_require_shift("RIGHT_SHIFT")) to_be_false;
+        expect(text_to_scan_code("NUM*")) to_equal(55);
+        expect(does_text_to_scan_code_require_shift("NUM*")) to_be_false;
+        expect(text_to_scan_code(";")) to_equal(39);
+        expect(does_text_to_scan_code_require_shift(";")) to_be_false;
+        expect(text_to_scan_code(":")) to_equal(39);
+        expect(does_text_to_scan_code_require_shift(":")) to_be_true;
+        expect(text_to_scan_code("NUM7")) to_equal(71);
+        expect(does_text_to_scan_code_require_shift("NUM7")) to_be_false;
+        expect(text_to_scan_code("ARROW_LEFT")) to_equal(203);
+        expect(does_text_to_scan_code_require_shift("ARROW_LEFT")) to_be_false;
+        // ...
+
+        // TODO: test them all!
+    end
+end

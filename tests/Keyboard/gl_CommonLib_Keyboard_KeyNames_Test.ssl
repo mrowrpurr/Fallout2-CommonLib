@@ -1,0 +1,55 @@
+#include "Waterchip.h"
+#include "Common/Keyboard/KeyNames.h"
+
+describe("Keyboard Key Names") begin
+    test("macros exist to get our unique keyboard key names as strings") begin
+        expect(KEYNAME_ESCAPE) to_equal("ESCAPE");
+        expect(KEYNAME_BACKSPACE) to_equal("BACKSPACE");
+        expect(KEYNAME_ENTER) to_equal("ENTER");
+        expect(KEYNAME_SPACE) to_equal("SPACE");
+        expect(KEYNAME_INSERT) to_equal("INSERT");
+        expect(KEYNAME_DELETE) to_equal("DELETE");
+        expect(KEYNAME_LEFT_ALT) to_equal("LEFT_ALT");
+        expect(KEYNAME_RIGHT_ALT) to_equal("RIGHT_ALT");
+        expect(KEYNAME_LEFT_CONTROL) to_equal("LEFT_CONTROL");
+        expect(KEYNAME_RIGHT_CONTROL) to_equal("RIGHT_CONTROL");
+        expect(KEYNAME_LEFT_SHIFT) to_equal("LEFT_SHIFT");
+        expect(KEYNAME_RIGHT_SHIFT) to_equal("RIGHT_SHIFT");
+        expect(KEYNAME_ARROW_UP) to_equal("ARROW_UP");
+        expect(KEYNAME_ARROW_LEFT) to_equal("ARROW_LEFT");
+        expect(KEYNAME_ARROW_RIGHT) to_equal("ARROW_RIGHT");
+        expect(KEYNAME_ARROW_DOWN) to_equal("ARROW_DOWN");
+        expect(KEYNAME_PAGE_UP) to_equal("PAGE_UP");
+        expect(KEYNAME_PAGE_DOWN) to_equal("PAGE_DOWN");
+        expect(KEYNAME_NUM_0) to_equal("NUM0");
+        expect(KEYNAME_NUM_1) to_equal("NUM1");
+        expect(KEYNAME_NUM_2) to_equal("NUM2");
+        expect(KEYNAME_NUM_3) to_equal("NUM3");
+        expect(KEYNAME_NUM_4) to_equal("NUM4");
+        expect(KEYNAME_NUM_5) to_equal("NUM5");
+        expect(KEYNAME_NUM_6) to_equal("NUM6");
+        expect(KEYNAME_NUM_7) to_equal("NUM7");
+        expect(KEYNAME_NUM_8) to_equal("NUM8");
+        expect(KEYNAME_NUM_9) to_equal("NUM9");
+        expect(KEYNAME_NUM_ENTER) to_equal("NUMENTER");
+        expect(KEYNAME_NUM_PERIOD) to_equal("NUM.");
+        expect(KEYNAME_NUM_FORWARD_SLASH) to_equal("NUM/");
+        expect(KEYNAME_NUM_ASTERISKS) to_equal("NUM*");
+        expect(KEYNAME_CAPS_LOCK) to_equal("CAPS_LOCK");
+        expect(KEYNAME_NUM_LOCK) to_equal("NUM_LOCK");
+        expect(KEYNAME_SCROLL_LOCK) to_equal("SCROLL_LOCK");
+        expect(KEYNAME_PRINT_SCREEN) to_equal("PRINT_SCREEN");
+        expect(KEYNAME_F1) to_equal("F1");
+        expect(KEYNAME_F2) to_equal("F2");
+        expect(KEYNAME_F3) to_equal("F3");
+        expect(KEYNAME_F4) to_equal("F4");
+        expect(KEYNAME_F5) to_equal("F5");
+        expect(KEYNAME_F6) to_equal("F6");
+        expect(KEYNAME_F7) to_equal("F7");
+        expect(KEYNAME_F8) to_equal("F8");
+        expect(KEYNAME_F9) to_equal("F9");
+        expect(KEYNAME_F10) to_equal("F10");
+        expect(KEYNAME_F11) to_equal("F11");
+        expect(KEYNAME_F12) to_equal("F12");
+    end
+end
