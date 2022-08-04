@@ -31,7 +31,7 @@ describe("TextArea") begin
         text_area = create_textarea;
 
         // Color defaults to white
-        expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("FFFFFF");
 
         // Font defaults to 101, most commonly used font
         expect(text_area.font) to_equal(101);
@@ -68,7 +68,7 @@ describe("TextArea") begin
         expect(text_area.x) to_equal(69);
         expect(text_area.y) to_equal(420);
 
-        expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("AABBCC");
     end
 
     it("defaults line-height to minimum line-height for font") begin
@@ -117,15 +117,15 @@ describe("TextArea") begin
 
     it("can set default color") begin
         text_area = create_textarea;
-        expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("FFFFFF");
 
-        TextArea_DefaultColor_set(text_area, "#abc");
+        text_area.color = rgb_normalize_hex("#abc");
 
-        expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("AABBCC");
 
-        TextArea_DefaultColor_set(text_area, "0055cc");
+        text_area.color = rgb_normalize_hex("0055cc");
 
-        expect(TextArea_DefaultColor_get(text_area)) to_equal("0055CC");
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("0055CC");
     end
 
     it("can add lines of text (of default color)") begin
@@ -140,7 +140,7 @@ describe("TextArea") begin
         expect(text_area._original_lines[0]) to_equal("Hello, world!");
         expect(text_area._original_line_colors[0]) to_equal("255255255");
 
-        TextArea_DefaultColor_set(text_area, "#abc");
+        text_area.color = rgb_normalize_hex("#abc");
         call TextArea_AddLine(text_area, "Goodnight, moon!");
 
         expect(len_array(text_area._original_lines)) to_equal(2);

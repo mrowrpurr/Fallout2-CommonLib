@@ -17,9 +17,6 @@
 #define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
 #define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX  "CommonLibUiTextArea_"
 
-#define TextArea_DefaultColor_get(textarea) rgb_normalized_to_hex(textarea.color)
-#define TextArea_DefaultColor_set(textarea, hex_color) textarea.color = rgb_normalize_hex(hex_color)
-
 // @private
 procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color);
 
