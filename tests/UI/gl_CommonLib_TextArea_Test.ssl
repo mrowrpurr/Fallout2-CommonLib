@@ -34,7 +34,7 @@ describe("TextArea") begin
         expect(TextArea_DefaultColor_get(text_area)) to_equal("FFFFFF");
 
         // Font defaults to 101, most commonly used font
-        expect(text_area.font)        to_equal(101);
+        expect(text_area.font) to_equal(101);
         expect(text_area.line_height) to_equal(10); // Line Height of font 101
 
         // x,y default to 0,0
@@ -42,7 +42,7 @@ describe("TextArea") begin
         expect(text_area.y) to_equal(0);
 
         // Width/Height to full screen
-        expect(text_area.width)  to_equal(get_screen_width);
+        expect(text_area.width) to_equal(get_screen_width);
         expect(text_area.height) to_equal(get_screen_height);
 
         // By default, adding new lines which aren't visible unless scrolled
@@ -61,40 +61,40 @@ describe("TextArea") begin
             "y":           420
         });
 
-        expect(text_area.font)        to_equal(103);
+        expect(text_area.font) to_equal(103);
         expect(text_area.line_height) to_equal(50);
-        expect(text_area.height)      to_equal(123);
-        expect(text_area.width)       to_equal(456);
-        expect(text_area.x)           to_equal(69);
-        expect(text_area.y)           to_equal(420);
+        expect(text_area.height) to_equal(123);
+        expect(text_area.width) to_equal(456);
+        expect(text_area.x) to_equal(69);
+        expect(text_area.y) to_equal(420);
 
         expect(TextArea_DefaultColor_get(text_area)) to_equal("AABBCC");
     end
 
     it("defaults line-height to minimum line-height for font") begin
         text_area = create_textarea({ "font": 100 });
-        expect(text_area.font)        to_equal(100);
+        expect(text_area.font) to_equal(100);
         expect(text_area.line_height) to_equal(12);
 
         text_area = create_textarea({ "font": 101 });
-        expect(text_area.font)        to_equal(101);
+        expect(text_area.font) to_equal(101);
         expect(text_area.line_height) to_equal(10);
 
         text_area = create_textarea({ "font": 102 });
-        expect(text_area.font)        to_equal(102);
+        expect(text_area.font) to_equal(102);
         expect(text_area.line_height) to_equal(28);
 
         text_area = create_textarea({ "font": 103 });
-        expect(text_area.font)        to_equal(103);
+        expect(text_area.font) to_equal(103);
         expect(text_area.line_height) to_equal(20);
 
         text_area = create_textarea({ "font": 104 });
-        expect(text_area.font)        to_equal(104);
+        expect(text_area.font) to_equal(104);
         expect(text_area.line_height) to_equal(26);
 
         // If you provide an invalid font, the game defaults to 101 (so do we!)
         text_area = create_textarea({ "font": 69 });
-        expect(text_area.font)        to_equal(101);
+        expect(text_area.font) to_equal(101);
         expect(text_area.line_height) to_equal(10);
     end
 
@@ -130,47 +130,47 @@ describe("TextArea") begin
 
     it("can add lines of text (of default color)") begin
         text_area = create_textarea;
-        expect(len_array(text_area._original_lines))   to_be_zero;
+        expect(len_array(text_area._original_lines)) to_be_zero;
         expect(len_array(text_area._original_line_colors)) to_be_zero;
 
         call TextArea_AddLine(text_area, "Hello, world!");
 
-        expect(len_array(text_area._original_lines))   to_equal(1);
+        expect(len_array(text_area._original_lines)) to_equal(1);
         expect(len_array(text_area._original_line_colors)) to_equal(1);
-        expect(text_area._original_lines[0])           to_equal("Hello, world!");
-        expect(text_area._original_line_colors[0])         to_equal("255255255");
+        expect(text_area._original_lines[0]) to_equal("Hello, world!");
+        expect(text_area._original_line_colors[0]) to_equal("255255255");
 
         TextArea_DefaultColor_set(text_area, "#abc");
         call TextArea_AddLine(text_area, "Goodnight, moon!");
 
-        expect(len_array(text_area._original_lines))   to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
         expect(len_array(text_area._original_line_colors)) to_equal(2);
-        expect(text_area._original_lines[0])           to_equal("Hello, world!");
-        expect(text_area._original_line_colors[0])         to_equal("255255255");
-        expect(text_area._original_lines[1])           to_equal("Goodnight, moon!");
-        expect(text_area._original_line_colors[1])         to_equal("170187204"); // #abc
+        expect(text_area._original_lines[0]) to_equal("Hello, world!");
+        expect(text_area._original_line_colors[0]) to_equal("255255255");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon!");
+        expect(text_area._original_line_colors[1]) to_equal("170187204"); // #abc
     end
 
     it("can add lines of text of certain color") begin
         text_area = create_textarea;
-        expect(len_array(text_area._original_lines))   to_be_zero;
+        expect(len_array(text_area._original_lines)) to_be_zero;
         expect(len_array(text_area._original_line_colors)) to_be_zero;
 
         call TextArea_AddColoredLine(text_area, "Hello, world!", "f0f");
 
-        expect(len_array(text_area._original_lines))   to_equal(1);
+        expect(len_array(text_area._original_lines)) to_equal(1);
         expect(len_array(text_area._original_line_colors)) to_equal(1);
-        expect(text_area._original_lines[0])           to_equal("Hello, world!");
-        expect(text_area._original_line_colors[0])         to_equal("255000255");
+        expect(text_area._original_lines[0]) to_equal("Hello, world!");
+        expect(text_area._original_line_colors[0]) to_equal("255000255");
 
         call TextArea_AddColoredLine(text_area, "Goodnight, moon!", "abcdef");
 
-        expect(len_array(text_area._original_lines))   to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
         expect(len_array(text_area._original_line_colors)) to_equal(2);
-        expect(text_area._original_lines[0])           to_equal("Hello, world!");
-        expect(text_area._original_line_colors[0])         to_equal("255000255");
-        expect(text_area._original_lines[1])           to_equal("Goodnight, moon!");
-        expect(text_area._original_line_colors[1])         to_equal("171205239"); // #abcdef
+        expect(text_area._original_lines[0]) to_equal("Hello, world!");
+        expect(text_area._original_line_colors[0]) to_equal("255000255");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon!");
+        expect(text_area._original_line_colors[1]) to_equal("171205239"); // #abcdef
     end
 
     it("can clear all lines") begin
@@ -182,56 +182,56 @@ describe("TextArea") begin
             "autoscroll": true
         });
 
-        expect(len_array(text_area._original_lines))           to_be_zero;
-        expect(len_array(text_area._original_line_colors))         to_be_zero;
-        expect(len_array(text_area._visible_lines))       to_be_zero;
+        expect(len_array(text_area._original_lines)) to_be_zero;
+        expect(len_array(text_area._original_line_colors)) to_be_zero;
+        expect(len_array(text_area._visible_lines)) to_be_zero;
         expect(len_array(text_area._visible_line_colors)) to_be_zero;
 
         call TextArea_AddLine(text_area, "Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon!", "abcdef");
 
-        expect(len_array(text_area._original_lines))           to_equal(2);
-        expect(len_array(text_area._original_line_colors))         to_equal(2);
-        expect(len_array(text_area._visible_lines))       to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
+        expect(len_array(text_area._original_line_colors)) to_equal(2);
+        expect(len_array(text_area._visible_lines)) to_equal(2);
         expect(len_array(text_area._visible_line_colors)) to_equal(2);
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
 
         call TextArea_ClearLines(text_area);
 
-        expect(len_array(text_area._original_lines))           to_be_zero;
-        expect(len_array(text_area._original_line_colors))         to_be_zero;
-        expect(len_array(text_area._visible_lines))       to_be_zero;
+        expect(len_array(text_area._original_lines)) to_be_zero;
+        expect(len_array(text_area._original_line_colors)) to_be_zero;
+        expect(len_array(text_area._visible_lines)) to_be_zero;
         expect(len_array(text_area._visible_line_colors)) to_be_zero;
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(0);
+        expect(text_area._visible_line_count) to_equal(0);
 
         call TextArea_AddLine(text_area, "Hello, world!");
 
-        expect(len_array(text_area._original_lines))           to_equal(1);
-        expect(len_array(text_area._original_line_colors))         to_equal(1);
-        expect(len_array(text_area._visible_lines))       to_equal(1);
+        expect(len_array(text_area._original_lines)) to_equal(1);
+        expect(len_array(text_area._original_line_colors)) to_equal(1);
+        expect(len_array(text_area._visible_lines)) to_equal(1);
         expect(len_array(text_area._visible_line_colors)) to_equal(1);
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(1);
+        expect(text_area._visible_line_count) to_equal(1);
 
         call TextArea_AddLine(text_area, "Hi again! This one is too long for the width of this text area. Which auto-scrolls. So the current index of first visible line should change.");
 
-        expect(len_array(text_area._original_lines))       to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
         expect(len_array(text_area._original_line_colors)) to_equal(2);
-        expect(len_array(text_area._visible_lines))        to_equal(4);
-        expect(len_array(text_area._visible_line_colors))  to_equal(4);
+        expect(len_array(text_area._visible_lines)) to_equal(4);
+        expect(len_array(text_area._visible_line_colors)) to_equal(4);
         expect(text_area._visible_lines_start_index) to_equal(2);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
 
         call TextArea_ClearLines(text_area);
 
-        expect(len_array(text_area._original_lines))           to_be_zero;
-        expect(len_array(text_area._original_line_colors))         to_be_zero;
-        expect(len_array(text_area._visible_lines))       to_be_zero;
+        expect(len_array(text_area._original_lines)) to_be_zero;
+        expect(len_array(text_area._original_line_colors)) to_be_zero;
+        expect(len_array(text_area._visible_lines)) to_be_zero;
         expect(len_array(text_area._visible_line_colors)) to_be_zero;
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(0);
+        expect(text_area._visible_line_count) to_equal(0);
     end
 
     it("can calculate visible lines based on text area width (with text wrapping)") begin
@@ -242,12 +242,12 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(len_array(text_area._visible_lines))       to_equal(2);
+        expect(len_array(text_area._visible_lines)) to_equal(2);
         expect(len_array(text_area._visible_line_colors)) to_equal(2);
-        expect(text_area._visible_lines[0])               to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._visible_lines[1])               to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area._visible_line_colors[0])         to_equal("000255000");
-        expect(text_area._visible_line_colors[1])         to_equal("255000255");
+        expect(text_area._visible_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._visible_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(text_area._visible_line_colors[0]) to_equal("000255000");
+        expect(text_area._visible_line_colors[1]) to_equal("255000255");
 
         // Reduce the width & clear the text_area & re-add some lines
         text_area.width = 210; // Long enough for Goognight line, but not Hello
@@ -255,7 +255,7 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(len_array(text_area._visible_lines))       to_equal(3);
+        expect(len_array(text_area._visible_lines)) to_equal(3);
         expect(len_array(text_area._visible_line_colors)) to_equal(3);
         expect(text_area._visible_lines[0]) to_equal("Hello, world! Hello, world! Hello,");
         expect(text_area._visible_lines[1]) to_equal(" world!");
@@ -270,7 +270,7 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(len_array(text_area._visible_lines))       to_equal(4);
+        expect(len_array(text_area._visible_lines)) to_equal(4);
         expect(len_array(text_area._visible_line_colors)) to_equal(4);
         expect(text_area._visible_lines[0]) to_equal("Hello, world! Hello, world! Hello,");
         expect(text_area._visible_lines[1]) to_equal(" world!");
@@ -286,7 +286,7 @@ describe("TextArea") begin
         call TextArea_ClearLines(text_area);
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(len_array(text_area._visible_lines))       to_equal(4);
+        expect(len_array(text_area._visible_lines)) to_equal(4);
         expect(len_array(text_area._visible_line_colors)) to_equal(4);
         expect(text_area._visible_lines[0]) to_equal("Goodnight,");
         expect(text_area._visible_lines[1]) to_equal(" moon!");
@@ -303,7 +303,7 @@ describe("TextArea") begin
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         // Just straight up can't render it.
-        expect(len_array(text_area._visible_lines))       to_equal(0);
+        expect(len_array(text_area._visible_lines)) to_equal(0);
         expect(len_array(text_area._visible_line_colors)) to_equal(0);
 
         // Finally, try zero width
@@ -312,7 +312,7 @@ describe("TextArea") begin
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         // Just straight up can't render it.
-        expect(len_array(text_area._visible_lines))       to_equal(0);
+        expect(len_array(text_area._visible_lines)) to_equal(0);
         expect(len_array(text_area._visible_line_colors)) to_equal(0);
     end
 
@@ -321,39 +321,39 @@ describe("TextArea") begin
             "font": 101, "width": 1000, "height": 20, "color": "#0f0"
         });
 
-        expect(text_area.height)      to_equal(20); // can fit exactly 2 lines.
+        expect(text_area.height) to_equal(20); // can fit exactly 2 lines.
         expect(text_area.line_height) to_equal(10); // font 101 defaults to 10px
-        expect(text_area.autoscroll)  to_be_false;  // default
+        expect(text_area.autoscroll) to_be_false;  // default
 
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
 
-        expect(len_array(text_area._original_lines))           to_equal(2);
-        expect(text_area._original_lines[0])                   to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._original_lines[1])                   to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(len_array(text_area._visible_lines))       to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
+        expect(text_area._original_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(len_array(text_area._visible_lines)) to_equal(2);
         expect(len_array(text_area._visible_line_colors)) to_equal(2);
-        expect(text_area._visible_lines[0])               to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._visible_lines[1])               to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area._visible_line_colors[0])         to_equal("000255000");
-        expect(text_area._visible_line_colors[1])         to_equal("255000255");
+        expect(text_area._visible_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._visible_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(text_area._visible_line_colors[0]) to_equal("000255000");
+        expect(text_area._visible_line_colors[1]) to_equal("255000255");
 
         // if we add another line, the visible lines will STILL be two!
         call TextArea_AddLine(text_area, "More text!");
 
         // It was added...
         expect(len_array(text_area._original_lines)) to_equal(3);
-        expect(text_area._original_lines[0])         to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._original_lines[1])         to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area._original_lines[2])         to_equal("More text!");
+        expect(text_area._original_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(text_area._original_lines[2]) to_equal("More text!");
 
         // But it is NOT visible! the text area isn't tall enough to display it
         // UPDATE: this just uses a cursor index now :)
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
     end
 
     it("can calculate visible lines based on text area height (autoscroll: true)") begin
@@ -361,39 +361,39 @@ describe("TextArea") begin
             "font": 101, "width": 1000, "height": 20, "color": "#0f0", "autoscroll": true
         });
 
-        expect(text_area.height)      to_equal(20); // can fit exactly 2 lines.
+        expect(text_area.height) to_equal(20); // can fit exactly 2 lines.
         expect(text_area.line_height) to_equal(10); // font 101 defaults to 10px
-        expect(text_area.autoscroll)  to_be_true;   // enabled!
+        expect(text_area.autoscroll) to_be_true;   // enabled!
 
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         expect(text_area._visible_lines_start_index) to_equal(0);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
 
-        expect(len_array(text_area._original_lines))           to_equal(2);
-        expect(text_area._original_lines[0])                   to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._original_lines[1])                   to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(len_array(text_area._visible_lines))       to_equal(2);
+        expect(len_array(text_area._original_lines)) to_equal(2);
+        expect(text_area._original_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(len_array(text_area._visible_lines)) to_equal(2);
         expect(len_array(text_area._visible_line_colors)) to_equal(2);
-        expect(text_area._visible_lines[0])               to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._visible_lines[1])               to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area._visible_line_colors[0])         to_equal("000255000");
-        expect(text_area._visible_line_colors[1])         to_equal("255000255");
+        expect(text_area._visible_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._visible_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(text_area._visible_line_colors[0]) to_equal("000255000");
+        expect(text_area._visible_line_colors[1]) to_equal("255000255");
 
         // if we add another line, the visible lines will STILL be two!
         call TextArea_AddLine(text_area, "More text!");
 
         // It was added...
         expect(len_array(text_area._original_lines)) to_equal(3);
-        expect(text_area._original_lines[0])         to_equal("Hello, world! Hello, world! Hello, world!");
-        expect(text_area._original_lines[1])         to_equal("Goodnight, moon! Goodnight, moon!");
-        expect(text_area._original_lines[2])         to_equal("More text!");
+        expect(text_area._original_lines[0]) to_equal("Hello, world! Hello, world! Hello, world!");
+        expect(text_area._original_lines[1]) to_equal("Goodnight, moon! Goodnight, moon!");
+        expect(text_area._original_lines[2]) to_equal("More text!");
 
         // Ah ha! Now the first visible line is no longer included in visible lines! It automatically scrolled!
         // UPDATE: this just uses a cursor index now :)
         expect(text_area._visible_lines_start_index) to_equal(1);
-        expect(text_area._visible_line_count)        to_equal(2);
+        expect(text_area._visible_line_count) to_equal(2);
     end
 
     todo("scroll up/down to change visible lines shown");
