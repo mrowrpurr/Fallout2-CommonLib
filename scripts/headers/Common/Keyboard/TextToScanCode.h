@@ -9,6 +9,8 @@ procedure text_to_scan_code(variable text, variable language_code = "en") begin
     variable search_text = text; 
     if search_text == ";" then search_text = "SEMICOLON"; // escape ; character (which is what .ini uses)
     if search_text == "=" then search_text = "EQUALS"; // escape = character (which is what .ini uses)
+    if search_text == "[" then search_text = "LEFT_BRACKET"; // escape ; character (which is what .ini uses)
+    if search_text == "]" then search_text = "RIGHT_BRACKET"; // escape = character (which is what .ini uses)
 
     variable lower, upper;
     if strlen(text) == 1 then begin
@@ -57,6 +59,8 @@ procedure does_text_to_scan_code_require_shift(variable text, variable language_
     variable search_text = text; 
     if search_text == ";" then search_text = "SEMICOLON"; // escape ; character (which is what .ini uses)
     if search_text == "=" then search_text = "EQUALS"; // escape = character (which is what .ini uses)
+    if search_text == "[" then search_text = "LEFT_BRACKET"; // escape ; character (which is what .ini uses)
+    if search_text == "]" then search_text = "RIGHT_BRACKET"; // escape = character (which is what .ini uses)
 
     variable lower, upper;
     if strlen(text) == 1 then begin
