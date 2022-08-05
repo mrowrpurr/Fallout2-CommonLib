@@ -567,22 +567,28 @@ describe("TextArea") begin
             "max_lines": 3
         });
 
-        expect(TextArea_LineCount(text_area)) to_equal(0);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(0);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(0);
 
         call TextArea_AddLine(text_area, "Hello world");
-        expect(TextArea_LineCount(text_area)) to_equal(1);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(1);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(1);
 
         call TextArea_AddLine(text_area, "Hello world");
-        expect(TextArea_LineCount(text_area)) to_equal(2);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(2);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(2);
 
         call TextArea_AddLine(text_area, "Hello world");
-        expect(TextArea_LineCount(text_area)) to_equal(3);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(3);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(3);
 
         call TextArea_AddLine(text_area, "Hello world");
-        expect(TextArea_LineCount(text_area)) to_equal(3);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(3);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(4);
 
         call TextArea_Clear(text_area);
-        expect(TextArea_LineCount(text_area)) to_equal(0);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(0);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(0);
     end
 
     it("can scroll up/down to change visible lines shown (if there are non-visible lines) (autoscroll: true)") begin
@@ -592,37 +598,49 @@ describe("TextArea") begin
             "autoscroll": true
         });
 
-        call TextArea_AddLine(text_area, "Hello, world!");
-        call TextArea_AddLine(text_area, "Hello, world!");
-        call TextArea_AddLine(text_area, "Hello, world!");
+        expect(text_area._visible_line_count) to_equal(0);
         expect(text_area._visible_lines_start) to_equal(0);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(0);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(0);
+
+        call TextArea_AddLine(text_area, "Hello, world!");
+        call TextArea_AddLine(text_area, "Hello, world!");
+        call TextArea_AddLine(text_area, "Hello, world!");
 
         expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(3);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(3);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(3);
 
         // Scrolling does nothing if the lines don't overflow
         call TextArea_Scroll(text_area, 1);
         expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_ScrollUp(text_area);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_ScrollDown(text_area);
-        // expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, -1);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
 
-        // call TextArea_AddLine(text_area, "Hello, world!");
-        // expect(text_area._visible_lines_start) to_equal(1);
+        call TextArea_AddLine(text_area, "Hello, world!");
+        expect(text_area._visible_lines_start) to_equal(1);
+        expect(text_area._visible_line_count) to_equal(3);
+        expect(TextArea_VisibleLineCount(text_area)) to_equal(3);
+        expect(TextArea_TotalLineCount(text_area)) to_equal(4);
 
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_Scroll(text_area, 1);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_Scroll(text_area, 1);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, -1);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, -1);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, 1);
+        expect(text_area._visible_lines_start) to_equal(1);
+        call TextArea_Scroll(text_area, 1);
+        expect(text_area._visible_lines_start) to_equal(1); // can't scroll further down!
+        call TextArea_Scroll(text_area, -1);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, -1);
+        expect(text_area._visible_lines_start) to_equal(0); // can't scroll further up!
+
         // call TextArea_ScrollDown(text_area);
         // expect(text_area._visible_lines_start) to_equal(1);
         // call TextArea_ScrollUp(text_area);

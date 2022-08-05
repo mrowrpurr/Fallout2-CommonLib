@@ -23,7 +23,8 @@
 procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color);
 procedure __TextArea_Initialize(variable text_area);
 
-#define TextArea_LineCount(text_area) (text_area._visible_line_count)
+#define TextArea_VisibleLineCount(text_area) (text_area._visible_line_count)
+#define TextArea_TotalLineCount(text_area) (len_array(text_area._visible_lines))
 
 procedure TextArea_Refresh(variable text_area) begin
     if text_area and text_area.initialized then begin
@@ -114,30 +115,35 @@ procedure TextArea_Scroll(variable text_area, variable lines_count) begin
     if text_area then begin
         variable scroll_lines = text_area.scroll_lines;
         variable current_line_start_index = text_area._visible_lines_start;
-        variable all_visible_lines_count = len_array(text_area._visible_lines);
+        variable all_potentially_visible_lines = len_array(text_area._visible_lines);
 
         // Don't scroll until we have enough content to scroll
-        if all_visible_lines_count < scroll_lines then return;
+        if all_potentially_visible_lines <= scroll_lines then return;
 
         if lines_count > scroll_lines then
             lines_count = scroll_lines;
         else if lines_count < 0 and lines_count < (scroll_lines * -1) then
             lines_count = (scroll_lines * -1);
 
+        // Trying to scroll down
+        if lines_count > 0 then begin
+            // Are there any lines further BELOW which are non visible?
+            variable non_viewable_lines_below = all_potentially_visible_lines - current_line_start_index;
+            if non_viewable_lines_below <= scroll_lines then return; // can't scroll down anymore!
+        end else begin
+            // Are there any lines further ABOVE which are non visible?
+            if current_line_start_index >= scroll_lines then return; // can't scroll up anymore!
+        end
+
         variable new_start = current_line_start_index + lines_count;
         if new_start < 0 then
             new_start = 0;
-        else if new_start > all_visible_lines_count - 1 then
-            new_start = all_visible_lines_count - 1;
+        else if new_start > all_potentially_visible_lines - 1 then
+            new_start = all_potentially_visible_lines - 1;
 
         text_area._visible_lines_start = new_start;
     end
 end
-
-
-
-
-
 
 // scroll up one full visible page (or text_area.scroll_lines if defined)
 procedure TextArea_ScrollUp(variable text_area) begin
