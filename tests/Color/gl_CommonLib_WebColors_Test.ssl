@@ -3,8 +3,6 @@
 
 describe("WebColors") begin
     it("can get the hexcode for a HTML color name") begin
-        expect(webcolor_hex("does not exist")) to_equal(0);
-
         expect(webcolor_hex("black")) to_equal("000000");
         expect(webcolor_hex("white")) to_equal("FFFFFF");
 
@@ -21,5 +19,10 @@ describe("WebColors") begin
 
         expect(webcolor_hex("deep pink")) to_equal("FF1493");
         expect(webcolor_hex("medium violetred")) to_equal("C71585");
+    end
+
+    it("returns given string (as hex color) if no color found, to allow for webcolor_hex('#abc')") begin
+        expect(webcolor_hex("#abc")) to_equal("AABBCC");
+        expect(webcolor_hex("hello world")) to_equal(0);
     end
 end
