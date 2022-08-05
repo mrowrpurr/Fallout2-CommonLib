@@ -45,6 +45,12 @@ describe("TextArea") begin
         expect(text_area.width) to_equal(get_screen_width);
         expect(text_area.height) to_equal(get_screen_height);
 
+        // default max lines is calculated by height / line_height (round down)
+        expect(text_area.max_lines) to_equal(floor(text_area.height / text_area.line_height));
+
+        // default scroll_lines is max_lines
+        expect(text_area.scroll_lines) to_equal(text_area.max_lines);
+
         // By default, adding new lines which aren't visible unless scrolled
         // will NOT scroll down the text area to reveal those!
         expect(text_area.autoscroll) to_be_false;
@@ -63,7 +69,9 @@ describe("TextArea") begin
             "width":            456,
             "x":                69,
             "y":                420,
-            "background_color": "#def"
+            "background_color": "#def",
+            "max_lines":        2,
+            "scroll_lines":     1
         });
 
         expect(text_area.font) to_equal(103);
@@ -72,6 +80,8 @@ describe("TextArea") begin
         expect(text_area.width) to_equal(456);
         expect(text_area.x) to_equal(69);
         expect(text_area.y) to_equal(420);
+        expect(text_area.max_lines) to_equal(2);
+        expect(text_area.scroll_lines) to_equal(1);
 
         expect(rgb_normalized_to_hex(text_area.color)) to_equal("AABBCC");
         expect(rgb_normalized_to_hex(text_area.background_color)) to_equal("DDEEFF");
@@ -83,7 +93,37 @@ describe("TextArea") begin
         });
 
         expect(text_area.transparent) to_be_true;
+
+        text_area = create_textarea({
+            "font": 103, // 20 line height
+            "height": 75 // supports 2x full lines
+        });
+
+        // default max lines is calculated by height / line_height (round down)
+        expect(text_area.max_lines) to_equal(3);
+
+        // default scroll_lines is max_lines
+        expect(text_area.scroll_lines) to_equal(3);
     end
+
+    it("destroying frees fixed arrays") begin
+        text_area = create_textarea;
+
+        expect(len_array(text_area._original_lines)) not_to_equal(-1);
+        expect(len_array(text_area._original_line_colors)) not_to_equal(-1);
+        expect(len_array(text_area._visible_lines)) not_to_equal(-1);
+        expect(len_array(text_area._visible_line_colors)) not_to_equal(-1);
+
+        call TextArea_Destroy(text_area);
+
+        expect(len_array(text_area._original_lines)) to_equal(-1);
+        expect(len_array(text_area._original_line_colors)) to_equal(-1);
+        expect(len_array(text_area._visible_lines)) to_equal(-1);
+        expect(len_array(text_area._visible_line_colors)) to_equal(-1);
+    end
+
+    // try get_interface_width to see if the window exists (does it only work if visible?)
+    todo("destroying destroys window, if created (and can see if window is created)");
 
     it("defaults line-height to minimum line-height for font") begin
         text_area = create_textarea({ "font": 100 });
@@ -110,6 +150,108 @@ describe("TextArea") begin
         text_area = create_textarea({ "font": 69 });
         expect(text_area.font) to_equal(101);
         expect(text_area.line_height) to_equal(10);
+    end
+
+    it("default max lines is equal to the possible visible lines based on height") begin
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 20
+        });
+        expect(text_area.max_lines) to_equal(5);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10
+        });
+        expect(text_area.max_lines) to_equal(10);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 50
+        });
+        expect(text_area.max_lines) to_equal(2);
+    end
+
+    it("cannot set max lines to be greater than max possible visible lines based on height") begin
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 20,
+            "max_lines": 8 // nope!
+        });
+        expect(text_area.max_lines) to_equal(5);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "max_lines": 12 // nope!
+        });
+        expect(text_area.max_lines) to_equal(10);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "max_lines": 9 // ok!
+        });
+        expect(text_area.max_lines) to_equal(9);
+    end
+
+    it("default scroll is equal to the possible visible lines based on height") begin
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 20
+        });
+        expect(text_area.scroll_lines) to_equal(5);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10
+        });
+        expect(text_area.scroll_lines) to_equal(10);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 50
+        });
+        expect(text_area.scroll_lines) to_equal(2);
+    end
+
+    it("cannot set scroll lines to be greater than max lines based on height") begin
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 20,
+            "scroll_lines": 69 // nope!
+        });
+        expect(text_area.scroll_lines) to_equal(5);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "scroll_lines": 11 // nope!
+        });
+        expect(text_area.scroll_lines) to_equal(10);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "scroll_lines": 9 // ok!
+        });
+        expect(text_area.scroll_lines) to_equal(9);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "max_lines": 8,
+            "scroll_lines": 9 // nope!
+        });
+        expect(text_area.scroll_lines) to_equal(8);
+
+        text_area = create_textarea({
+            "height": 100,
+            "line_height": 10,
+            "max_lines": 8,
+            "scroll_lines": 8 // ok!
+        });
+        expect(text_area.scroll_lines) to_equal(8);
     end
 
     it("can provide custom name for text area (its window name)") begin
@@ -218,16 +360,16 @@ describe("TextArea") begin
         expect(len_array(text_area._original_line_colors)) to_equal(2);
         expect(len_array(text_area._visible_lines)) to_equal(2);
         expect(len_array(text_area._visible_line_colors)) to_equal(2);
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(2);
 
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
 
         expect(len_array(text_area._original_lines)) to_be_zero;
         expect(len_array(text_area._original_line_colors)) to_be_zero;
         expect(len_array(text_area._visible_lines)) to_be_zero;
         expect(len_array(text_area._visible_line_colors)) to_be_zero;
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(0);
 
         call TextArea_AddLine(text_area, "Hello, world!");
@@ -236,7 +378,7 @@ describe("TextArea") begin
         expect(len_array(text_area._original_line_colors)) to_equal(1);
         expect(len_array(text_area._visible_lines)) to_equal(1);
         expect(len_array(text_area._visible_line_colors)) to_equal(1);
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(1);
 
         call TextArea_AddLine(text_area, "Hi again! This one is too long for the width of this text area. Which auto-scrolls. So the current index of first visible line should change.");
@@ -245,16 +387,16 @@ describe("TextArea") begin
         expect(len_array(text_area._original_line_colors)) to_equal(2);
         expect(len_array(text_area._visible_lines)) to_equal(4);
         expect(len_array(text_area._visible_line_colors)) to_equal(4);
-        expect(text_area._visible_lines_start_index) to_equal(2);
+        expect(text_area._visible_lines_start) to_equal(2);
         expect(text_area._visible_line_count) to_equal(2);
 
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
 
         expect(len_array(text_area._original_lines)) to_be_zero;
         expect(len_array(text_area._original_line_colors)) to_be_zero;
         expect(len_array(text_area._visible_lines)) to_be_zero;
         expect(len_array(text_area._visible_line_colors)) to_be_zero;
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(0);
     end
 
@@ -275,7 +417,7 @@ describe("TextArea") begin
 
         // Reduce the width & clear the text_area & re-add some lines
         text_area.width = 210; // Long enough for Goognight line, but not Hello
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
@@ -290,7 +432,7 @@ describe("TextArea") begin
 
         // Reduce the width more
         text_area.width = 200; // No longer long enough for Goornight line
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
@@ -307,7 +449,7 @@ describe("TextArea") begin
 
         // Reduce the even width more
         text_area.width = 100; // So small!
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         expect(len_array(text_area._visible_lines)) to_equal(4);
@@ -323,7 +465,7 @@ describe("TextArea") begin
 
         // Then try impossibly small, like 10px - no words render this small
         text_area.width = 10; // So small!
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         // Just straight up can't render it.
@@ -332,7 +474,7 @@ describe("TextArea") begin
 
         // Finally, try zero width
         text_area.width = 0; // So small!
-        call TextArea_ClearLines(text_area);
+        call TextArea_Clear(text_area);
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
         // Just straight up can't render it.
@@ -352,7 +494,7 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(2);
 
         expect(len_array(text_area._original_lines)) to_equal(2);
@@ -376,7 +518,7 @@ describe("TextArea") begin
 
         // But it is NOT visible! the text area isn't tall enough to display it
         // UPDATE: this just uses a cursor index now :)
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(2);
     end
 
@@ -392,7 +534,7 @@ describe("TextArea") begin
         call TextArea_AddLine(text_area, "Hello, world! Hello, world! Hello, world!");
         call TextArea_AddColoredLine(text_area, "Goodnight, moon! Goodnight, moon!", "f0f");
 
-        expect(text_area._visible_lines_start_index) to_equal(0);
+        expect(text_area._visible_lines_start) to_equal(0);
         expect(text_area._visible_line_count) to_equal(2);
 
         expect(len_array(text_area._original_lines)) to_equal(2);
@@ -416,13 +558,114 @@ describe("TextArea") begin
 
         // Ah ha! Now the first visible line is no longer included in visible lines! It automatically scrolled!
         // UPDATE: this just uses a cursor index now :)
-        expect(text_area._visible_lines_start_index) to_equal(1);
+        expect(text_area._visible_lines_start) to_equal(1);
         expect(text_area._visible_line_count) to_equal(2);
     end
 
-    todo("scroll up/down to change visible lines shown");
+    it("can get count of visible lines") begin
+        text_area = create_textarea({
+            "max_lines": 3
+        });
 
-    todo("can specify max lines");
+        expect(TextArea_LineCount(text_area)) to_equal(0);
 
-    todo("combine wrapping with autoscroll and max lines");
+        call TextArea_AddLine(text_area, "Hello world");
+        expect(TextArea_LineCount(text_area)) to_equal(1);
+
+        call TextArea_AddLine(text_area, "Hello world");
+        expect(TextArea_LineCount(text_area)) to_equal(2);
+
+        call TextArea_AddLine(text_area, "Hello world");
+        expect(TextArea_LineCount(text_area)) to_equal(3);
+
+        call TextArea_AddLine(text_area, "Hello world");
+        expect(TextArea_LineCount(text_area)) to_equal(3);
+
+        call TextArea_Clear(text_area);
+        expect(TextArea_LineCount(text_area)) to_equal(0);
+    end
+
+    it("can scroll up/down to change visible lines shown (if there are non-visible lines) (autoscroll: true)") begin
+        text_area = create_textarea({
+            "height": 1000,
+            "max_lines": 3,
+            "autoscroll": true
+        });
+
+        call TextArea_AddLine(text_area, "Hello, world!");
+        call TextArea_AddLine(text_area, "Hello, world!");
+        call TextArea_AddLine(text_area, "Hello, world!");
+        expect(text_area._visible_lines_start) to_equal(0);
+
+        expect(text_area._visible_lines_start) to_equal(0);
+        expect(text_area._visible_line_count) to_equal(3);
+
+        // Scrolling does nothing if the lines don't overflow
+        call TextArea_Scroll(text_area, 1);
+        expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_ScrollUp(text_area);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_ScrollDown(text_area);
+        // expect(text_area._visible_lines_start) to_equal(0);
+
+        // call TextArea_AddLine(text_area, "Hello, world!");
+        // expect(text_area._visible_lines_start) to_equal(1);
+
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_Scroll(text_area, 1);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_Scroll(text_area, 1);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_ScrollDown(text_area);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_ScrollUp(text_area);
+        // expect(text_area._visible_lines_start) to_equal(0);
+
+        // call TextArea_AddLine(text_area, "Hello, world!");
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_Scroll(text_area, 1);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_Scroll(text_area, 1);
+        // expect(text_area._visible_lines_start) to_equal(2);
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_Scroll(text_area, -1);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_ScrollDown(text_area);
+        // expect(text_area._visible_lines_start) to_equal(2);
+        // call TextArea_ScrollUp(text_area);
+        // expect(text_area._visible_lines_start) to_equal(0);
+
+        // call TextArea_AddLine(text_area, "Hello, world!"); // <-- 2 pages
+        // call TextArea_AddLine(text_area, "Hello, world!"); // <-- over 2 pages
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_Scroll(text_area, 3);
+        // expect(text_area._visible_lines_start) to_equal(3);
+        // call TextArea_Scroll(text_area, 1);
+        // expect(text_area._visible_lines_start) to_equal(3);
+        // call TextArea_Scroll(text_area, -2);
+        // expect(text_area._visible_lines_start) to_equal(1);
+        // call TextArea_Scroll(text_area, -2);
+        // expect(text_area._visible_lines_start) to_equal(0);
+        // call TextArea_ScrollDown(text_area);
+        // expect(text_area._visible_lines_start) to_equal(2);
+        // call TextArea_ScrollDown(text_area);
+        // expect(text_area._visible_lines_start) to_equal(3);
+        // call TextArea_ScrollUp(text_area);
+        // expect(text_area._visible_lines_start) to_equal(1); // even tho scroll down only went a little bit, scroll up still goes up a full page worth
+        // call TextArea_ScrollUp(text_area);
+        // expect(text_area._visible_lines_start) to_equal(0);
+    end
+
+    todo("can scroll to top and scroll to bottom");
+
+    todo("confirm that AddColoredLine takes web colors");
+    todo("require name to be 12 characters or fewer (?) truncate");
 end

@@ -1,35 +1,56 @@
 #include "sfall/sfall.h"
 #include "sfall/dik.h"
-#include "Logger.h"
 #include "Common/UI/TextArea.h"
 
 variable text_area;
-
-inline procedure setup_logger begin
-    set_logger_prefix("[TextArea Example] ");
-end
 
 inline procedure setup_text_area begin
     text_area = TextArea_Create({
         "x": 50,
         "y": 100,
-        "width": 300,
-        "height": 200
+        "width": 350,
+        "height": 200,
+        "autoscroll": true,
+        "transparent": true
     });
+end
+
+procedure random_line begin
+    variable lines = [
+        "Hello",
+        "Hi there.",
+        "Wassup?"
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    ];
+    return lines[random(0, len_array(lines) - 1)];
+end
+
+procedure random_color begin
+    variable colors = [
+        "red",
+        "blue",
+        "green",
+        "pink",
+        "deep pink",
+        "hot pink"
+    ];
+    return colors[random(0, len_array(colors) - 1)];
 end
 
 procedure on_keypress begin
     variable pressed = get_sfall_arg,
              keycode = get_sfall_arg;
 
-    if pressed and keycode == DIK_DELETE then begin
-        log_info("Toggle visibility!");
-        call TextArea_ToggleVisibility(text_area);
+    if not pressed then return;
+
+    switch keycode begin
+        case DIK_GRAVE: call TextArea_ToggleVisibility(text_area);
+        case DIK_DELETE: call TextArea_Destroy(text_area);
+        case DIK_INSERT: call TextArea_AddColoredLine(text_area, random_line, random_color);
     end
 end
 
 procedure start begin
-    call setup_logger;
     call setup_text_area;
     register_hook_proc(HOOK_KEYPRESS, on_keypress);
 end
