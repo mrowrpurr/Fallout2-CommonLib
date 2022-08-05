@@ -48,17 +48,22 @@ describe("TextArea") begin
         // By default, adding new lines which aren't visible unless scrolled
         // will NOT scroll down the text area to reveal those!
         expect(text_area.autoscroll) to_be_false;
+
+        // Default is: black background, non-transparent
+        expect(text_area.transparent) to_be_false;
+        expect(rgb_normalized_to_hex(text_area.background_color)) to_equal("000000");
     end
 
     it("can provide defaults when creating") begin
         text_area = create_textarea({
-            "color":       "#abc",
-            "font":        103,
-            "line_height": 50,
-            "height":      123,
-            "width":       456,
-            "x":           69,
-            "y":           420
+            "color":            "#abc",
+            "font":             103,
+            "line_height":      50,
+            "height":           123,
+            "width":            456,
+            "x":                69,
+            "y":                420,
+            "background_color": "#def"
         });
 
         expect(text_area.font) to_equal(103);
@@ -69,6 +74,15 @@ describe("TextArea") begin
         expect(text_area.y) to_equal(420);
 
         expect(rgb_normalized_to_hex(text_area.color)) to_equal("AABBCC");
+        expect(rgb_normalized_to_hex(text_area.background_color)) to_equal("DDEEFF");
+
+        expect(text_area.transparent) to_be_false;
+
+        text_area = create_textarea({
+            "transparent": true
+        });
+
+        expect(text_area.transparent) to_be_true;
     end
 
     it("defaults line-height to minimum line-height for font") begin
@@ -126,6 +140,16 @@ describe("TextArea") begin
         text_area.color = rgb_normalize_hex("0055cc");
 
         expect(rgb_normalized_to_hex(text_area.color)) to_equal("0055CC");
+    end
+
+    it("supports web color names for text and background color") begin
+        text_area = create_textarea({
+            "color": "deep pink",
+            "background_color": "hot pink"
+        });
+
+        expect(rgb_normalized_to_hex(text_area.color)) to_equal("FF1493");
+        expect(rgb_normalized_to_hex(text_area.background_color)) to_equal("FF69B4");
     end
 
     it("can add lines of text (of default color)") begin

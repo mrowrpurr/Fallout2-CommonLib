@@ -11,11 +11,13 @@
 #include "sfall/define_extra.h"
 #include "Common/UI/Fonts.h"
 #include "Common/UI/TextWidthSubstring.h"
+#include "Common/Color/WebColors.h"
 #include "Common/Color/NormalizedRGBColor.h"
 
-#define __TEXT_AREA_DEFAULT_FONT                 (101)
-#define __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR "255255255"
-#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX  "CommonLibUiTextArea_"
+#define __TEXT_AREA_DEFAULT_FONT (101)
+#define __TEXT_AREA_DEFAULT_TEXT_NORMALIZED_RGB_COLOR "255255255"
+#define __TEXT_AREA_DEFAULT_BACKGROUND_NORMALIZED_RGB_COLOR "000000000"
+#define __TEXT_AREA_DEFRAULT_WINDOW_NAME_PREFIX "CommonLibUiTextArea_"
 
 // @private
 procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color);
@@ -55,9 +57,14 @@ procedure TextArea_Create(variable defaults = 0) begin
     end
 
     if text_area.color then
-        text_area.color = rgb_normalize_hex(text_area.color);
+        text_area.color = rgb_normalize_hex(webcolor_hex(text_area.color));
     else
-        text_area.color = __TEXT_AREA_DEFAULT_NORMALIZED_RGB_COLOR;
+        text_area.color = __TEXT_AREA_DEFAULT_TEXT_NORMALIZED_RGB_COLOR;
+
+    if text_area.background_color then
+        text_area.background_color = rgb_normalize_hex(webcolor_hex(text_area.background_color));
+    else
+        text_area.background_color = __TEXT_AREA_DEFAULT_BACKGROUND_NORMALIZED_RGB_COLOR;
 
     if not text_area.width  then text_area.width  = get_screen_width;
     if not text_area.height then text_area.height = get_screen_height;
