@@ -10,9 +10,10 @@ inline procedure setup_text_area begin
         "y": 100,
         "width": 350,
         "height": 200,
-        "autoscroll": true,
-        "transparent": true
+        "autoscroll": true
+        // "transparent": true
     });
+    display_msg("Text Area: " + text_area);
 end
 
 procedure random_line begin
@@ -44,18 +45,20 @@ procedure on_keypress begin
     if not pressed then return;
 
     switch keycode begin
-        case DIK_GRAVE: call TextArea_ToggleVisibility(text_area);
+        case DIK_GRAVE:  call TextArea_ToggleVisibility(text_area);
         case DIK_DELETE: call TextArea_Destroy(text_area);
         case DIK_INSERT: call TextArea_AddColoredLine(text_area, random_line, random_color);
+        case DIK_PGUP:   call TextArea_ScrollUp(text_area);
+        case DIK_PGDN:   call TextArea_ScrollDown(text_area);
     end
 end
 
 procedure timed_event_p_proc begin
-    add_global_timer_event(10, 0);
+    // add_global_timer_event(10, 0);
 end
 
 procedure start begin
     call setup_text_area;
     register_hook_proc(HOOK_KEYPRESS, on_keypress);
-    add_global_timer_event(10, 0);
+    // add_global_timer_event(10, 0);
 end
