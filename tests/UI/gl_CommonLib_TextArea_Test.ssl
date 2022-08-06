@@ -712,7 +712,8 @@ describe("TextArea") begin
             "x": 10,
             "y": 100,
             "width": 200,
-            "height": 300
+            "height": 300,
+            "max_lines": 3
         });
 
         /*
@@ -723,9 +724,9 @@ describe("TextArea") begin
             (10,400)             (210,400)
         */
 
-        call TextArea_AddLine(text_area, "Foo");
-        call TextArea_AddLine(text_area, "Bar");
-        call TextArea_AddLine(text_area, "Baz");
+        call TextArea_AddLine(text_area, "Foo"); // index 0 -- index -1 if not found
+        call TextArea_AddLine(text_area, "Bar"); // index 1
+        call TextArea_AddLine(text_area, "Baz"); // index 2
 
         // First, can we see if the window is even at the given location?
         expect(TextArea_IsAtPosition(text_area, 0, 0)) to_be_false;
@@ -737,6 +738,47 @@ describe("TextArea") begin
         expect(TextArea_IsAtPosition(text_area, 210, 99)) to_be_false;
         expect(TextArea_IsAtPosition(text_area, 210, 400)) to_be_true;
         expect(TextArea_IsAtPosition(text_area, 210, 401)) to_be_false;
+
+        // Next, try getting lines by a position relative to the window
+        expect(TextArea_LineAtRelativePosition(text_area, 0, -10)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 0)) to_equal(0);
+        expect(TextArea_LineAtRelativePosition(text_area, 6969, 0)) to_equal(0); // width doesn't matter, only height
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 9)) to_equal(0);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 10)) to_equal(1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 15)) to_equal(1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 19)) to_equal(1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 20)) to_equal(2);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 25)) to_equal(2);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 29)) to_equal(2);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 30)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 31)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 39)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 40)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 50)) to_equal(-1);
+
+        call TextArea_AddLine(text_area, "Hello"); // index 3
+        call TextArea_AddLine(text_area, "World"); // index 4
+
+        // Next, try getting lines by a position relative to the window
+        // but the visible lines are different
+        expect(TextArea_LineAtRelativePosition(text_area, 0, -10)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 0)) to_equal(2);
+        expect(TextArea_LineAtRelativePosition(text_area, 6969, 0)) to_equal(2); // width doesn't matter, only height
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 9)) to_equal(2);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 10)) to_equal(3);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 15)) to_equal(3);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 19)) to_equal(3);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 20)) to_equal(4);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 25)) to_equal(4);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 29)) to_equal(4);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 30)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 31)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 39)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 40)) to_equal(-1);
+        expect(TextArea_LineAtRelativePosition(text_area, 0, 50)) to_equal(-1);
+
+        // Finally, get lines under cursor by position relative to screen
+
     end
 
     todo("can get info about a line by index: color, hover color, action, text");
