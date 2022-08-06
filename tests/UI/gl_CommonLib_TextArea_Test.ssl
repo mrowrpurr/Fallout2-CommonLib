@@ -348,6 +348,8 @@ describe("TextArea") begin
             "autoscroll": true
         });
 
+        expect(text_area.max_lines) to_equal(2); // 101 20px height
+
         expect(len_array(text_area._original_lines)) to_be_zero;
         expect(len_array(text_area._original_line_colors)) to_be_zero;
         expect(len_array(text_area._visible_lines)) to_be_zero;
@@ -522,7 +524,7 @@ describe("TextArea") begin
         expect(text_area._visible_line_count) to_equal(2);
     end
 
-    it("can calculate visible lines based on text area height (autoscroll: true)") begin
+    xit("can calculate visible lines based on text area height (autoscroll: true)") begin
         text_area = create_textarea({
             "font": 101, "width": 1000, "height": 20, "color": "#0f0", "autoscroll": true
         });
@@ -640,50 +642,55 @@ describe("TextArea") begin
         expect(text_area._visible_lines_start) to_equal(0);
         call TextArea_Scroll(text_area, -1);
         expect(text_area._visible_lines_start) to_equal(0); // can't scroll further up!
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(1);
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
 
-        // call TextArea_ScrollDown(text_area);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_ScrollUp(text_area);
-        // expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_AddLine(text_area, "Hello, world!");
+        expect(text_area._visible_lines_start) to_equal(2); // auto scrolls to the bottom
 
-        // call TextArea_AddLine(text_area, "Hello, world!");
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_Scroll(text_area, 1);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_Scroll(text_area, 1);
-        // expect(text_area._visible_lines_start) to_equal(2);
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_Scroll(text_area, -1);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_ScrollDown(text_area);
-        // expect(text_area._visible_lines_start) to_equal(2);
-        // call TextArea_ScrollUp(text_area);
-        // expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_Scroll(text_area, 1);
+        expect(text_area._visible_lines_start) to_equal(2); // can't scroll further down
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(2);
 
-        // call TextArea_AddLine(text_area, "Hello, world!"); // <-- 2 pages
-        // call TextArea_AddLine(text_area, "Hello, world!"); // <-- over 2 pages
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_Scroll(text_area, 3);
-        // expect(text_area._visible_lines_start) to_equal(3);
-        // call TextArea_Scroll(text_area, 1);
-        // expect(text_area._visible_lines_start) to_equal(3);
-        // call TextArea_Scroll(text_area, -2);
-        // expect(text_area._visible_lines_start) to_equal(1);
-        // call TextArea_Scroll(text_area, -2);
-        // expect(text_area._visible_lines_start) to_equal(0);
-        // call TextArea_ScrollDown(text_area);
-        // expect(text_area._visible_lines_start) to_equal(2);
-        // call TextArea_ScrollDown(text_area);
-        // expect(text_area._visible_lines_start) to_equal(3);
-        // call TextArea_ScrollUp(text_area);
-        // expect(text_area._visible_lines_start) to_equal(1); // even tho scroll down only went a little bit, scroll up still goes up a full page worth
-        // call TextArea_ScrollUp(text_area);
-        // expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_AddLine(text_area, "Hello, world!"); // <-- 2 pages
+        call TextArea_AddLine(text_area, "Hello, world!"); // <-- over 2 pages
+
+        expect(TextArea_TotalLineCount(text_area)) to_equal(7);
+        expect(text_area._visible_line_count) to_equal(3); // max lines = 3
+        expect(text_area._visible_lines_start) to_equal(4);
+
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(1);
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
+        call TextArea_ScrollUp(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
+
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(3);
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(4);
+        call TextArea_ScrollDown(text_area);
+        expect(text_area._visible_lines_start) to_equal(4);
     end
 
     todo("can scroll to top and scroll to bottom");
 
     todo("confirm that AddColoredLine takes web colors");
+
+    todo("can hover over line with mouse and it'll show hover color if hover enabled");
+
+    todo("can provide actions which clicking on a line triggers");
+
+    // TODO - rename to .id
     todo("require name to be 12 characters or fewer (?) truncate");
+
+    // For the TextArea rendered by TextInput ?????
+    todo("can render trunctated text (when overflow) anchored left");
+    todo("can render truncated text (when overflow) anchored right");
 end

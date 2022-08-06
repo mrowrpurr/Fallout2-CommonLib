@@ -120,26 +120,17 @@ procedure TextArea_Scroll(variable text_area, variable lines_count) begin
         // Don't scroll until we have enough content to scroll
         if all_potentially_visible_lines <= scroll_lines then return;
 
-        if lines_count > scroll_lines then
-            lines_count = scroll_lines;
-        else if lines_count < 0 and lines_count < (scroll_lines * -1) then
-            lines_count = (scroll_lines * -1);
-
-        // Trying to scroll down
-        if lines_count > 0 then begin
-            // Are there any lines further BELOW which are non visible?
-            variable non_viewable_lines_below = all_potentially_visible_lines - current_line_start_index;
-            if non_viewable_lines_below <= scroll_lines then return; // can't scroll down anymore!
-        end else begin
-            // Are there any lines further ABOVE which are non visible?
-            if current_line_start_index >= scroll_lines then return; // can't scroll up anymore!
-        end
+        if lines_count > 0 and all_potentially_visible_lines - current_line_start_index <= scroll_lines then return; // can't scroll down anymore!
 
         variable new_start = current_line_start_index + lines_count;
+
         if new_start < 0 then
             new_start = 0;
         else if new_start > all_potentially_visible_lines - 1 then
             new_start = all_potentially_visible_lines - 1;
+
+        if lines_count > 0 and new_start > all_potentially_visible_lines - scroll_lines then
+            new_start = all_potentially_visible_lines - scroll_lines;
 
         text_area._visible_lines_start = new_start;
     end
@@ -147,12 +138,12 @@ end
 
 // scroll up one full visible page (or text_area.scroll_lines if defined)
 procedure TextArea_ScrollUp(variable text_area) begin
-
+    call TextArea_Scroll(text_area, text_area.scroll_lines * -1);
 end
 
 // scroll up one full visible page (or text_area.scroll_lines if defined)
 procedure TextArea_ScrollDown(variable text_area) begin
-
+    call TextArea_Scroll(text_area, text_area.scroll_lines);
 end
 
 procedure TextArea_Create(variable defaults = 0) begin
@@ -309,12 +300,16 @@ inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_tex
 
         if text_area._visible_line_count < text_area.max_lines and available_vertical_space - line_height >= 0 then
             text_area._visible_line_count++; // There is enough visible space to display this line!
-        else if autoscroll then
-            text_area._visible_lines_start++; // Move the index of visible lines down
 
         call array_push(text_area._visible_lines, text_to_add);
         call array_push(text_area._visible_line_colors, normalized_line_color);
         
         total_added_text_characters_count += text_to_add_length;
+    end
+
+    if autoscroll then begin
+        variable new_start_index = len_array(text_area._visible_lines) - text_area.max_lines;
+        if new_start_index < 0 then new_start_index = 0;
+        text_area._visible_lines_start = new_start_index;
     end
 end
