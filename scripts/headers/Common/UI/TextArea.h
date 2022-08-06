@@ -135,7 +135,10 @@ procedure TextArea_Scroll(variable text_area, variable lines_count) begin
         if lines_count > 0 and new_start > all_potentially_visible_lines - scroll_lines then
             new_start = all_potentially_visible_lines - scroll_lines;
 
-        text_area._visible_lines_start = new_start;
+        if new_start != text_area._visible_lines_start then begin
+            text_area._visible_lines_start = new_start;
+            if text_area.visible then call TextArea_Refresh(text_area);
+        end
     end
 end
 
@@ -271,7 +274,7 @@ end
     @private procedures
 */
 
-inline procedure __TextArea_Initialize(variable text_area) begin
+procedure __TextArea_Initialize(variable text_area) begin
     variable flags;
     if text_area.transparent then
         flags = WIN_FLAG_HIDDEN + WIN_FLAG_MOVEONTOP + WIN_FLAG_TRANSPARENT;
@@ -291,7 +294,7 @@ end
 // Called when adding lines via TextArea_AddLine or TextArea_AddColoredLine
 // Inline because it's only used from 2 places (adding color and non-color lines)
 // and would prefer not to add an additional procedure invocation on line addition.
-inline procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
+procedure __TextArea_AddVisibleLine(variable text_area, variable line_text, variable normalized_line_color) begin
     variable autoscroll                = text_area.autoscroll;
     variable line_height               = text_area.line_height;
     variable current_total_line_height = len_array(text_area._visible_lines) * line_height;
