@@ -679,9 +679,34 @@ describe("TextArea") begin
         expect(text_area._visible_lines_start) to_equal(4);
     end
 
-    todo("can scroll to top and scroll to bottom");
+    it("can scroll to top and scroll to bottom") begin
+        text_area = create_textarea({
+            "max_lines": 3
+        });
+
+        call TextArea_AddLine(text_area, "Hello world"); // 1
+        call TextArea_AddLine(text_area, "Hello world"); // 2
+        call TextArea_AddLine(text_area, "Hello world"); // 3
+        call TextArea_AddLine(text_area, "Hello world"); // 4
+        call TextArea_AddLine(text_area, "Hello world"); // 5
+        call TextArea_AddLine(text_area, "Hello world"); // 6
+        call TextArea_AddLine(text_area, "Hello world"); // 7
+        call TextArea_AddLine(text_area, "Hello world"); // 8   /// 3
+        call TextArea_AddLine(text_area, "Hello world"); // 9   /// max
+        call TextArea_AddLine(text_area, "Hello world"); // 10  /// lines
+
+        expect(text_area._visible_lines_start) to_equal(0);
+
+        call TextArea_ScrollToBottom(text_area);
+        expect(text_area._visible_lines_start) to_equal(7);
+
+        call TextArea_ScrollToTop(text_area);
+        expect(text_area._visible_lines_start) to_equal(0);
+    end
 
     todo("confirm that AddColoredLine takes web colors");
+
+    todo("can get the line under the cursor and its colors and action");
 
     todo("can hover over line with mouse and it'll show hover color if hover enabled");
 

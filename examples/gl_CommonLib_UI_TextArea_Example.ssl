@@ -50,7 +50,12 @@ procedure on_keypress begin
     end
 end
 
+procedure timed_event_p_proc begin
+    add_global_timer_event(10, 0);
+end
+
 procedure start begin
     call setup_text_area;
     register_hook_proc(HOOK_KEYPRESS, on_keypress);
+    add_global_timer_event(10, 0);
 end

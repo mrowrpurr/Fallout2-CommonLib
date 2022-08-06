@@ -146,6 +146,16 @@ procedure TextArea_ScrollDown(variable text_area) begin
     call TextArea_Scroll(text_area, text_area.scroll_lines);
 end
 
+procedure TextArea_ScrollToTop(variable text_area) begin
+    text_area._visible_lines_start = 0;
+end
+
+procedure TextArea_ScrollToBottom(variable text_area) begin
+    variable new_start_index = len_array(text_area._visible_lines) - text_area.max_lines;
+    if new_start_index < 0 then new_start_index = 0;
+    text_area._visible_lines_start = new_start_index;
+end
+
 procedure TextArea_Create(variable defaults = 0) begin
     variable text_area = defaults if defaults else {};
     fix_array(text_area);
