@@ -26,6 +26,9 @@ procedure __TextArea_Initialize(variable text_area);
 #define TextArea_VisibleLineCount(text_area) (text_area._visible_line_count)
 #define TextArea_TotalLineCount(text_area) (len_array(text_area._visible_lines))
 
+#define TextArea_IsAtPosition(text_area, x, y) \
+    (x >= text_area["x"] and x <= text_area["x"] + text_area.width and y >= text_area["y"] and y <= text_area["y"] + text_area.height)
+
 procedure TextArea_Refresh(variable text_area) begin
     if text_area and text_area.initialized then begin
 
@@ -154,6 +157,14 @@ procedure TextArea_ScrollToBottom(variable text_area) begin
     variable new_start_index = len_array(text_area._visible_lines) - text_area.max_lines;
     if new_start_index < 0 then new_start_index = 0;
     text_area._visible_lines_start = new_start_index;
+end
+
+procedure TextArea_LineAtScreenPosition(variable text_area, variable x, variable y) begin
+
+end
+
+procedure TextArea_LineAtRelativePosition(variable text_area, variable x, variable y) begin
+
 end
 
 procedure TextArea_Create(variable defaults = 0) begin

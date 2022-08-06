@@ -706,7 +706,40 @@ describe("TextArea") begin
 
     todo("confirm that AddColoredLine takes web colors");
 
-    todo("can get the line under the cursor and its colors and action");
+    it("can get the index of the line under the cursor (at a screen x,y position)") begin
+        text_area = create_textarea({
+            "font": 101,
+            "x": 10,
+            "y": 100,
+            "width": 200,
+            "height": 300
+        });
+
+        /*
+            (10,100)             (210,100)
+             [                    ]   ^
+             [     <- 200px ->    ] 300px
+             [                    ]  |
+            (10,400)             (210,400)
+        */
+
+        call TextArea_AddLine(text_area, "Foo");
+        call TextArea_AddLine(text_area, "Bar");
+        call TextArea_AddLine(text_area, "Baz");
+
+        // First, can we see if the window is even at the given location?
+        expect(TextArea_IsAtPosition(text_area, 0, 0)) to_be_false;
+        expect(TextArea_IsAtPosition(text_area, 9, 100)) to_be_false;
+        expect(TextArea_IsAtPosition(text_area, 10, 100)) to_be_true;
+        expect(TextArea_IsAtPosition(text_area, 10, 400)) to_be_true;
+        expect(TextArea_IsAtPosition(text_area, 10, 401)) to_be_false;
+        expect(TextArea_IsAtPosition(text_area, 210, 110)) to_be_true;
+        expect(TextArea_IsAtPosition(text_area, 210, 99)) to_be_false;
+        expect(TextArea_IsAtPosition(text_area, 210, 400)) to_be_true;
+        expect(TextArea_IsAtPosition(text_area, 210, 401)) to_be_false;
+    end
+
+    todo("can get info about a line by index: color, hover color, action, text");
 
     todo("can hover over line with mouse and it'll show hover color if hover enabled");
 
