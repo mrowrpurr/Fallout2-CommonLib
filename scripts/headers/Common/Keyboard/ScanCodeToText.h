@@ -9,7 +9,7 @@
 #define KEYBOARD_DX_SCAN_CODE_TO_TEXT_PREFIX_NONVISIBLE_NUMPAD_CHARACTER ("d")
 #define KEYBOARD_DX_SCAN_CODE_TO_TEXT_PREFIX_SPACE_CHARACTER ("x")
 
-procedure scan_code_to_text(variable dx_scan_code, variable language_code = "en", variable shift = false) begin
+procedure scan_code_to_text(variable dx_scan_code, variable shift = false, variable language_code = "en") begin
     variable text = get_ini_string(
         KEYBOARD_DX_SCAN_CODE_TO_TEXT_INI_PATH(language_code) + "|ScanCodeToText|" + dx_scan_code
     );
