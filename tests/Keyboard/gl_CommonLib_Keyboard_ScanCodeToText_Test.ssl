@@ -1,58 +1,173 @@
 #include "Waterchip.h"
 #include "Common/Keyboard/ScanCodeToText.h"
 
-describe("ScanCodeToText") begin
-    test("English keyboard") begin
-        variable shift = true;
-
-        expect(scan_code_to_text(1, "en")) to_equal("ESCAPE");
-        expect(scan_code_to_text(1, "en", shift)) to_equal("ESCAPE");
-        expect(scan_code_to_text(2, "en")) to_equal("1");
-        expect(scan_code_to_text(2, "en", shift)) to_equal("!");
-        expect(scan_code_to_text(3, "en")) to_equal("2");
-        expect(scan_code_to_text(3, "en", shift)) to_equal("@");
-        expect(scan_code_to_text(4, "en")) to_equal("3");
-        expect(scan_code_to_text(4, "en", shift)) to_equal("#");
-        expect(scan_code_to_text(5, "en")) to_equal("4");
-        expect(scan_code_to_text(5, "en", shift)) to_equal("$");
-        expect(scan_code_to_text(6, "en")) to_equal("5");
-        expect(scan_code_to_text(6, "en", shift)) to_equal("%");
-        expect(scan_code_to_text(7, "en")) to_equal("6");
-        expect(scan_code_to_text(7, "en", shift)) to_equal("^");
-        expect(scan_code_to_text(8, "en")) to_equal("7");
-        expect(scan_code_to_text(8, "en", shift)) to_equal("&");
-        expect(scan_code_to_text(9, "en")) to_equal("8");
-        expect(scan_code_to_text(9, "en", shift)) to_equal("*");
-        expect(scan_code_to_text(10, "en")) to_equal("9");
-        expect(scan_code_to_text(10, "en", shift)) to_equal("(");
-        expect(scan_code_to_text(11, "en")) to_equal("0");
-        expect(scan_code_to_text(11, "en", shift)) to_equal(")");
-        expect(scan_code_to_text(12, "en")) to_equal("-");
-        expect(scan_code_to_text(12, "en", shift)) to_equal("_");
-        expect(scan_code_to_text(13, "en")) to_equal("=");
-        expect(scan_code_to_text(13, "en", shift)) to_equal("+");
-        expect(scan_code_to_text(14, "en")) to_equal("BACKSPACE");
-        expect(scan_code_to_text(14, "en", shift)) to_equal("BACKSPACE");
-        expect(scan_code_to_text(15, "en")) to_equal("TAB");
-        expect(scan_code_to_text(15, "en", shift)) to_equal("TAB");
-        expect(scan_code_to_text(16, "en")) to_equal("q");
-        expect(scan_code_to_text(16, "en", shift)) to_equal("Q");
-        expect(scan_code_to_text(17, "en")) to_equal("w");
-        expect(scan_code_to_text(17, "en", shift)) to_equal("W");
-        expect(scan_code_to_text(18, "en")) to_equal("e");
-        expect(scan_code_to_text(18, "en", shift)) to_equal("E");
-        expect(scan_code_to_text(19, "en")) to_equal("r");
-        expect(scan_code_to_text(19, "en", shift)) to_equal("R");
-        expect(scan_code_to_text(20, "en")) to_equal("t");
-        expect(scan_code_to_text(20, "en", shift)) to_equal("T");
-        expect(scan_code_to_text(21, "en")) to_equal("y");
-        expect(scan_code_to_text(21, "en", shift)) to_equal("Y");
-        expect(scan_code_to_text(22, "en")) to_equal("u");
-        expect(scan_code_to_text(22, "en", shift)) to_equal("U");
-        expect(scan_code_to_text(23, "en")) to_equal("i");
-        expect(scan_code_to_text(23, "en", shift)) to_equal("I");
-        // ...
-
-        // TODO - add all of them.
+#define assert_non_visible(text, code) \
+    it("Non-visible " + text) begin \
+        scancode = scan_code_to_text(code); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_false; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_false; \
     end
+
+#define assert_non_visible_no_shift(text, code) \
+    it("Non-visible No-shift " + text) begin \
+        scancode = scan_code_to_text(code, true); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_false; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_false; \
+    end
+
+#define assert_non_visible_numpad(text, code) \
+    it("Non-visible Numpad " + text) begin \
+        scancode = scan_code_to_text(code); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_false; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_true; \
+    end
+
+#define assert_non_visible_no_shift_numpad(text, code) \
+    it("Non-visible No-shift Numpad" + text) begin \
+        scancode = scan_code_to_text(code, true); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_false; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_true; \
+    end
+
+#define assert_visible(text, code) \
+    it("Visible " + text) begin \
+        scancode = scan_code_to_text(code); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_true; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_false; \
+    end
+
+#define assert_visible_shift(text, code) \
+    it("Visible Shift " + text) begin \
+        scancode = scan_code_to_text(code, true); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_true; \
+        expect(scancode["shift"]) with_msg("shift") to_be_true; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_false; \
+    end
+
+#define assert_visible_numpad(text, code) \
+    it("Visible Numpad " + text) begin \
+        scancode = scan_code_to_text(code); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_true; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_true; \
+    end
+
+#define assert_visible_no_shift_numpad(text, code) \
+    it("Visible No-shift Numpad " + text) begin \
+        scancode = scan_code_to_text(code, true); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_true; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_true; \
+    end
+
+#define assert_visible_no_shift(text, code) \
+    it("Visible No-shift " + text) begin \
+        scancode = scan_code_to_text(code, true); \
+        expect(scancode["code"]) to_equal(code); \
+        expect(scancode["text"]) to_equal(text); \
+        expect(scancode["visible"]) with_msg("visible") to_be_true; \
+        expect(scancode["shift"]) with_msg("shift") to_be_false; \
+        expect(scancode["numpad"]) with_msg("numpad") to_be_false; \
+    end
+
+describe("ScanCodeToText - English Keyboard") begin
+
+    debug_msg("start() with TEST NAME " + __waterchip_testsuite_currently_running_test_name);
+
+    variable scancode;
+
+    assert_non_visible("ESCAPE", 1)
+    assert_visible("1", 2)
+    assert_visible_shift("!", 2)
+    assert_visible("2", 3)
+    assert_visible_shift("@", 3)
+    assert_visible("3", 4)
+    assert_visible_shift("#", 4)
+    assert_visible("4", 5)
+    assert_visible_shift("$", 5)
+    assert_visible("5", 6)
+    assert_visible_shift("%", 6)
+    assert_visible("6", 7)
+    assert_visible_shift("^", 7)
+    assert_visible("7", 8)
+    assert_visible_shift("&", 8)
+    assert_visible("8", 9)
+    assert_visible_shift("*", 9)
+    assert_visible("9", 10)
+    assert_visible_shift("(", 10)
+    assert_visible("0", 11)
+    assert_visible_shift(")", 11)
+    assert_visible("-", 12)
+    assert_visible_shift("_", 12)
+    assert_visible("=", 13)
+    assert_visible_shift("+", 13)
+    assert_non_visible("BACKSPACE", 14)
+    assert_non_visible_no_shift("BACKSPACE", 14)
+    assert_non_visible("TAB", 15)
+    assert_non_visible_no_shift("TAB", 15)
+    assert_visible("q", 16)
+    assert_visible_shift("Q", 16)
+    assert_visible("w", 17)
+    assert_visible_shift("W", 17)
+    assert_visible("e", 18)
+    assert_visible_shift("E", 18)
+    assert_visible_shift("R", 19)
+    assert_visible("t", 20)
+    assert_visible_shift("T", 20)
+
+    // Stack overflow
+    // assert_visible("y", 21)
+    // assert_visible_shift("Y", 21)
+
+
+
+
+
+    // assert_non_visible("ENTER", 28)
+    // assert_non_visible_no_shift("ENTER", 28)
+    // assert_non_visible("LEFT_CONTROL", 29)
+    // assert_non_visible_no_shift("LEFT_CONTROL", 29)
+
+    // assert_visible("`", 41)
+    // assert_visible_shift("~", 41)
+
+    // assert_visible("e", 18)
+    // assert_visible_shift("E", 18)
+
+    // assert_non_visible("LEFT_SHIFT", 42)
+    // assert_non_visible_no_shift("LEFT_SHIFT", 42)
+
+    // assert_visible("\\", 43)
+    // assert_visible_shift("|", 43)
+
+    // assert_visible_numpad("*", 55)
+    // assert_visible_no_shift_numpad("*", 55)
+
+    // assert_visible_numpad("7", 71)
+    // assert_visible_no_shift_numpad("7", 71)
+
+    // assert_non_visible_numpad("ENTER", 156)
+    // assert_non_visible_no_shift_numpad("ENTER", 156)
+
 end
