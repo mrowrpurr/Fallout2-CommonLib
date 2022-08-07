@@ -45,11 +45,11 @@ procedure on_keypress begin
     if not pressed then return;
 
     switch keycode begin
-        case DIK_GRAVE:  call TextArea_ToggleVisibility(text_area);
+        case DIK_RBRACKET: call TextArea_ToggleVisibility(text_area);
         case DIK_DELETE: call TextArea_Destroy(text_area);
         case DIK_INSERT: call TextArea_AddColoredLine(text_area, random_line, random_color);
-        case DIK_PGUP:   call TextArea_ScrollUp(text_area);
-        case DIK_PGDN:   call TextArea_ScrollDown(text_area);
+        case DIK_PGUP: call TextArea_ScrollUp(text_area);
+        case DIK_PGDN: call TextArea_ScrollDown(text_area);
     end
 end
 

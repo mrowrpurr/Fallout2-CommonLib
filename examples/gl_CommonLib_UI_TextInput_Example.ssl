@@ -1,0 +1,18 @@
+#include "sfall/sfall.h"
+#include "Common/UI/TextInput.h"
+
+// Note/TODO: for Keyboard helpers, add a helper for
+//            whether a key is associated with readable text or a modifier key
+
+variable text_input;
+
+procedure on_keypress begin
+    variable pressed = get_sfall_arg,
+             keycode = get_sfall_arg;
+    if pressed then call TextInput_InputKeyCode(text_input, keycode);
+end
+
+procedure start begin
+    text_input = TextInput_Create;
+    register_hook_proc(HOOK_KEYPRESS, on_keypress);
+end

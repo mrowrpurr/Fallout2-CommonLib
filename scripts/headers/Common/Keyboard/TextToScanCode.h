@@ -2,6 +2,8 @@
 
 #include "sfall/sfall.h"
 
+// TODO add a version of this which returns an {} which says if .shift is required! INSTEAD of looking up the code TWICE
+
 #define KEYBOARD_TEXT_TO_DX_SCAN_CODE_INI_PATH(language_code) \
     ("mods/CommonLib/Keyboard/TextToScanCode." + language_code + ".ini")
 
