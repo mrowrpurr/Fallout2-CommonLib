@@ -1,57 +1,69 @@
 #include "Waterchip.h"
 #include "Common/Keyboard/ScanCodeToText.h"
 
+// TODO - separate test file per language
+// TODO - different it() test for each key
+
 describe("ScanCodeToText") begin
     test("English keyboard") begin
+
         variable shift = true;
 
-        expect(scan_code_to_text(1, "en")) to_equal("ESCAPE");
-        expect(scan_code_to_text(1, "en", shift)) to_equal("ESCAPE");
-        expect(scan_code_to_text(2, "en")) to_equal("1");
-        expect(scan_code_to_text(2, "en", shift)) to_equal("!");
-        expect(scan_code_to_text(3, "en")) to_equal("2");
-        expect(scan_code_to_text(3, "en", shift)) to_equal("@");
-        expect(scan_code_to_text(4, "en")) to_equal("3");
-        expect(scan_code_to_text(4, "en", shift)) to_equal("#");
-        expect(scan_code_to_text(5, "en")) to_equal("4");
-        expect(scan_code_to_text(5, "en", shift)) to_equal("$");
-        expect(scan_code_to_text(6, "en")) to_equal("5");
-        expect(scan_code_to_text(6, "en", shift)) to_equal("%");
-        expect(scan_code_to_text(7, "en")) to_equal("6");
-        expect(scan_code_to_text(7, "en", shift)) to_equal("^");
-        expect(scan_code_to_text(8, "en")) to_equal("7");
-        expect(scan_code_to_text(8, "en", shift)) to_equal("&");
-        expect(scan_code_to_text(9, "en")) to_equal("8");
-        expect(scan_code_to_text(9, "en", shift)) to_equal("*");
-        expect(scan_code_to_text(10, "en")) to_equal("9");
-        expect(scan_code_to_text(10, "en", shift)) to_equal("(");
-        expect(scan_code_to_text(11, "en")) to_equal("0");
-        expect(scan_code_to_text(11, "en", shift)) to_equal(")");
-        expect(scan_code_to_text(12, "en")) to_equal("-");
-        expect(scan_code_to_text(12, "en", shift)) to_equal("_");
-        expect(scan_code_to_text(13, "en")) to_equal("=");
-        expect(scan_code_to_text(13, "en", shift)) to_equal("+");
-        expect(scan_code_to_text(14, "en")) to_equal("BACKSPACE");
-        expect(scan_code_to_text(14, "en", shift)) to_equal("BACKSPACE");
-        expect(scan_code_to_text(15, "en")) to_equal("TAB");
-        expect(scan_code_to_text(15, "en", shift)) to_equal("TAB");
-        expect(scan_code_to_text(16, "en")) to_equal("q");
-        expect(scan_code_to_text(16, "en", shift)) to_equal("Q");
-        expect(scan_code_to_text(17, "en")) to_equal("w");
-        expect(scan_code_to_text(17, "en", shift)) to_equal("W");
-        expect(scan_code_to_text(18, "en")) to_equal("e");
-        expect(scan_code_to_text(18, "en", shift)) to_equal("E");
-        expect(scan_code_to_text(19, "en")) to_equal("r");
-        expect(scan_code_to_text(19, "en", shift)) to_equal("R");
-        expect(scan_code_to_text(20, "en")) to_equal("t");
-        expect(scan_code_to_text(20, "en", shift)) to_equal("T");
-        expect(scan_code_to_text(21, "en")) to_equal("y");
-        expect(scan_code_to_text(21, "en", shift)) to_equal("Y");
-        expect(scan_code_to_text(22, "en")) to_equal("u");
-        expect(scan_code_to_text(22, "en", shift)) to_equal("U");
-        expect(scan_code_to_text(23, "en")) to_equal("i");
-        expect(scan_code_to_text(23, "en", shift)) to_equal("I");
-        // ...
+        variable scancode;
+        
+        scancode = scan_code_to_text(1, "en");
+        expect(scancode.text) to_equal("ESCAPE");
+        expect(scancode.visible) to_be_false;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_false;
+
+        scancode = scan_code_to_text(2, "en");
+        expect(scancode.text) to_equal("1");
+        expect(scancode.visible) to_be_true;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_false;
+        //
+        scancode = scan_code_to_text(2, "en", shift);
+        expect(scancode.text) to_equal("!");
+        expect(scancode.visible) to_be_true;
+        expect(scancode.shift) to_be_true;
+        expect(scancode.numpad) to_be_false;
+
+        scancode = scan_code_to_text(14, "en");
+        expect(scancode.text) to_equal("BACKSPACE");
+        expect(scancode.visible) to_be_false;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_false;
+        //
+        scancode = scan_code_to_text(14, "en", shift);
+        expect(scancode.text) to_equal("BACKSPACE");
+        expect(scancode.visible) to_be_false;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_false;
+
+        scancode = scan_code_to_text(55, "en");
+        expect(scancode.text) to_equal("*");
+        expect(scancode.visible) to_be_true;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_true;
+        //
+        scancode = scan_code_to_text(55, "en", shift);
+        expect(scancode.text) to_equal("*");
+        expect(scancode.visible) to_be_true;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_true;
+
+        scancode = scan_code_to_text(156, "en");
+        expect(scancode.text) to_equal("ENTER");
+        expect(scancode.visible) to_be_false;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_true;
+        //
+        scancode = scan_code_to_text(156, "en", shift);
+        expect(scancode.text) to_equal("ENTER");
+        expect(scancode.visible) to_be_false;
+        expect(scancode.shift) to_be_false;
+        expect(scancode.numpad) to_be_true;
 
         // TODO - add all of them.
     end
