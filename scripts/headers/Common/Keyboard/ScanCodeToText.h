@@ -65,6 +65,7 @@ procedure scan_code_to_text(variable dx_scan_code, variable language_code = "en"
     end
 
     return {
+        "code": dx_scan_code,
         "text": text,
         "visible": visible,
         "numpad": numpad,

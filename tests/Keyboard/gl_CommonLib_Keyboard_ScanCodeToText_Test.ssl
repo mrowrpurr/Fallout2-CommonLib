@@ -12,54 +12,63 @@ describe("ScanCodeToText") begin
         variable scancode;
         
         scancode = scan_code_to_text(1, "en");
+        expect(scancode.code) to_equal(1);
         expect(scancode.text) to_equal("ESCAPE");
         expect(scancode.visible) to_be_false;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_false;
 
         scancode = scan_code_to_text(2, "en");
+        expect(scancode.code) to_equal(2);
         expect(scancode.text) to_equal("1");
         expect(scancode.visible) to_be_true;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_false;
         //
         scancode = scan_code_to_text(2, "en", shift);
+        expect(scancode.code) to_equal(2);
         expect(scancode.text) to_equal("!");
         expect(scancode.visible) to_be_true;
         expect(scancode.shift) to_be_true;
         expect(scancode.numpad) to_be_false;
 
         scancode = scan_code_to_text(14, "en");
+        expect(scancode.code) to_equal(14);
         expect(scancode.text) to_equal("BACKSPACE");
         expect(scancode.visible) to_be_false;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_false;
         //
         scancode = scan_code_to_text(14, "en", shift);
+        expect(scancode.code) to_equal(14);
         expect(scancode.text) to_equal("BACKSPACE");
         expect(scancode.visible) to_be_false;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_false;
 
         scancode = scan_code_to_text(55, "en");
+        expect(scancode.code) to_equal(55);
         expect(scancode.text) to_equal("*");
         expect(scancode.visible) to_be_true;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_true;
         //
         scancode = scan_code_to_text(55, "en", shift);
+        expect(scancode.code) to_equal(55);
         expect(scancode.text) to_equal("*");
         expect(scancode.visible) to_be_true;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_true;
 
         scancode = scan_code_to_text(156, "en");
+        expect(scancode.code) to_equal(156);
         expect(scancode.text) to_equal("ENTER");
         expect(scancode.visible) to_be_false;
         expect(scancode.shift) to_be_false;
         expect(scancode.numpad) to_be_true;
         //
         scancode = scan_code_to_text(156, "en", shift);
+        expect(scancode.code) to_equal(156);
         expect(scancode.text) to_equal("ENTER");
         expect(scancode.visible) to_be_false;
         expect(scancode.shift) to_be_false;
