@@ -1,15 +1,24 @@
 #include "sfall/sfall.h"
+#include "sfall/dik.h"
 #include "Common/UI/TextInput.h"
-
-// Note/TODO: for Keyboard helpers, add a helper for
-//            whether a key is associated with readable text or a modifier key
 
 variable text_input;
 
 procedure on_keypress begin
     variable pressed = get_sfall_arg,
              keycode = get_sfall_arg;
-    if pressed then call TextInput_InputKeyCode(text_input, keycode);
+
+    if pressed and keycode == DIK_HOME then
+        call TextInput_ToggleVisibility(text_input);
+
+    variable new_keycode = TextInput_OnKeypress(text_input, pressed, keycode);
+
+    // Override key pressed for other mods if a different keycode is returned
+    if new_keycode != keycode then begin
+        display_msg("OVERRIDE KEY " + keycode + " with KEYCODE: " + new_keycode);
+        set_sfall_arg(1, new_keycode);
+        set_sfall_return(new_keycode);
+    end
 end
 
 procedure start begin
