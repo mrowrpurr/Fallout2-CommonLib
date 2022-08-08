@@ -61,7 +61,6 @@ procedure TextArea_Refresh(variable text_area) begin
 
         variable line_number;
         for line_number = 0; line_number < line_count; line_number++; begin
-            display_msg("RENDER LINE " + line_index);
             variable line = text_area._visible_lines[line_index];
             variable font_color = text_area._visible_line_colors[line_index];
             if font_color != last_color then
