@@ -46,6 +46,11 @@ procedure TextInput_OnKeypress(variable text_input, variable pressed, variable d
         return dx_scan_code;
 end
 
+procedure TextInput_Clear(variable text_input) begin
+    text_input.text = "";
+    call TextArea_Clear(text_input.textarea);
+end
+
 procedure TextInput_ToggleVisibility(variable text_input) begin
     call TextArea_ToggleVisibility(text_input.textarea);
 end
