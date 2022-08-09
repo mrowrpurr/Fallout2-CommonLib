@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sfall/sfall.h"
+#include "sfall/lib.strings.h"
 
 // TODO add a version of this which returns an {} which says if .shift is required! INSTEAD of looking up the code TWICE
 

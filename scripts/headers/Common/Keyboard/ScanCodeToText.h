@@ -1,5 +1,7 @@
 #pragma once
 
+#include "sfall/lib.strings.h"
+
 #define KEYBOARD_DX_SCAN_CODE_TO_TEXT_INI_PATH(language_code) \
     ("mods/CommonLib/Keyboard/ScanCodeToText." + language_code + ".ini")
 
